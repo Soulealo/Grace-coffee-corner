@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grace Coffee Shop â€” ÐŸÑ€Ð¾Ñ„Ð°Ð¹Ð»</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --cream:#F5EFE0; --espresso:#2C1A0E; --caramel:#C08B45; --latte:#D4B483; --foam:#FAF6EE; --dark-roast:#1A0F07; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { min-height:100vh; background:var(--espresso); color:var(--cream); font-family:'DM Sans',sans-serif; font-weight:300; }
+  body::before { content:''; position:fixed; inset:0; background:radial-gradient(ellipse 80% 60% at 20% 10%, rgba(192,139,69,.13), transparent 60%), radial-gradient(ellipse 60% 80% at 80% 90%, rgba(192,139,69,.08), transparent 60%); pointer-events:none; }
+  header, main { position:relative; z-index:1; }
+  header { max-width:980px; margin:0 auto; padding:24px; display:flex; justify-content:space-between; gap:16px; align-items:center; }
+  a { color:var(--latte); text-decoration:none; }
+  .brand { color:var(--caramel); letter-spacing:2.5px; text-transform:uppercase; font-weight:500; }
+  nav { display:flex; gap:12px; flex-wrap:wrap; }
+  nav a, nav button { border:1px solid rgba(192,139,69,.3); border-radius:50px; padding:10px 16px; background:rgba(255,255,255,.03); color:var(--latte); font:inherit; cursor:pointer; }
+  main { max-width:980px; margin:0 auto; padding:42px 24px 70px; animation:fadeUp .55s ease both; }
+  h1 { font-family:'Playfair Display',serif; font-size:clamp(2.6rem,7vw,5rem); font-weight:400; margin-bottom:20px; }
+  h1 em { color:var(--caramel); }
+  .layout { display:grid; grid-template-columns:.9fr 1.1fr; gap:18px; }
+  .card { border:1px solid rgba(192,139,69,.26); border-radius:14px; background:rgba(255,255,255,.045); padding:24px; }
+  .points { font-family:'Playfair Display',serif; font-size:3rem; color:var(--caramel); margin:8px 0; }
+  p { color:var(--latte); line-height:1.7; }
+  form { display:grid; gap:14px; }
+  label { display:grid; gap:8px; color:var(--latte); font-size:11px; letter-spacing:1.5px; text-transform:uppercase; }
+  input { min-height:46px; border:1px solid rgba(192,139,69,.25); border-radius:8px; background:rgba(255,255,255,.05); color:var(--cream); font:inherit; padding:12px 14px; outline:none; }
+  button.primary { min-height:46px; border:0; border-radius:50px; background:var(--caramel); color:var(--dark-roast); font:inherit; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; cursor:pointer; }
+  .alert { display:none; margin-top:14px; color:#ffb2a8; line-height:1.6; }
+  .alert.show { display:block; }
+  @keyframes fadeUp { from{opacity:0; transform:translateY(18px);} to{opacity:1; transform:translateY(0);} }
+  @media (max-width:600px){ header{align-items:flex-start; flex-direction:column;} .layout{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="/"><img src="/assets/logo.png" alt="Grace Coffee Shop logo" style="width:72px;height:52px;object-fit:cover;border-radius:8px;"></a>
+    <nav>
+      <a href="/landing.html">ÐÒ¯Ò¯Ñ€</a>
+      <a href="/">Event</a>
+      <a href="/loyalty.html">Loyalty</a>
+      <button id="logoutBtn">Ð“Ð°Ñ€Ð°Ñ…</button>
+    </nav>
+  </header>
+  <main>
+    <h1>ÐœÐ¸Ð½Ð¸Ð¹ <em>Ð¿Ñ€Ð¾Ñ„Ð°Ð¹Ð»</em></h1>
+    <div class="layout">
+      <section class="card">
+        <p id="hello">ÐÑ‡Ð°Ð°Ð»Ð»Ð°Ð¶ Ð±Ð°Ð¹Ð½Ð°...</p>
+        <div class="points" id="points">0</div>
+        <p>Loyalty Ð¾Ð½Ð¾Ð¾</p>
+      </section>
+      <section class="card">
+        <form id="profileForm">
+          <label>ÐÑÑ€
+            <input name="name" required>
+          </label>
+          <label>Ð˜-Ð¼ÑÐ¹Ð»
+            <input name="email" type="email" required>
+          </label>
+          <label>Ð£Ñ‚Ð°Ñ
+            <input name="phone">
+          </label>
+          <label>Ð¨Ð¸Ð½Ñ Ð½ÑƒÑƒÑ† Ò¯Ð³
+            <input name="password" type="password" placeholder="Ð¥Ð¾Ð¾ÑÐ¾Ð½ Ò¯Ð»Ð´ÑÑÐ¶ Ð±Ð¾Ð»Ð½Ð¾">
+          </label>
+          <button class="primary">Ð¥Ð°Ð´Ð³Ð°Ð»Ð°Ñ…</button>
+        </form>
+        <div id="alert" class="alert"></div>
+      </section>
+    </div>
+  </main>
+<script>
+  const token = localStorage.getItem('cb_token');
+  if (!token) window.location.href = '/login.html';
+  const headers = { 'Content-Type':'application/json', Authorization:`Bearer ${token}` };
+  const alertBox = document.getElementById('alert');
+
+  function api(url, options = {}) {
+    return fetch(url, { ...options, headers:{ ...headers, ...(options.headers || {}) } })
+      .then(async res => {
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 401) {
+          localStorage.clear();
+          window.location.href = '/login.html';
+        }
+        if (!res.ok) throw new Error(data.error || 'ÐÐ»Ð´Ð°Ð° Ð³Ð°Ñ€Ð»Ð°Ð°');
+        return data;
+      });
+  }
+
+  function render(user) {
+    localStorage.setItem('cb_user', JSON.stringify(user));
+    document.getElementById('hello').textContent = `${user.name} Â· ${user.email}`;
+    document.getElementById('points').textContent = user.loyaltyPoints || 0;
+    document.querySelector('[name="name"]').value = user.name || '';
+    document.querySelector('[name="email"]').value = user.email || '';
+    document.querySelector('[name="phone"]').value = user.phone || '';
+  }
+
+  api('/api/loyalty/me').then(data => render(data.user)).catch(err => {
+    alertBox.textContent = err.message;
+    alertBox.className = 'alert show';
+  });
+
+  document.getElementById('profileForm').addEventListener('submit', event => {
+    event.preventDefault();
+    const values = Object.fromEntries(new FormData(event.target).entries());
+    if (!values.password) delete values.password;
+    api('/api/auth/me', { method:'PATCH', body:JSON.stringify(values) })
+      .then(data => {
+        render(data.user);
+        alertBox.textContent = 'ÐŸÑ€Ð¾Ñ„Ð°Ð¹Ð» Ñ…Ð°Ð´Ð³Ð°Ð»Ð°Ð³Ð´Ð»Ð°Ð°';
+        alertBox.className = 'alert show';
+      })
+      .catch(err => {
+        alertBox.textContent = err.message;
+        alertBox.className = 'alert show';
+      });
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.clear();
+    window.location.href = '/landing.html';
+  });
+</script>
+</body>
+</html>
+

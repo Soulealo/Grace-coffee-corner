@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grace Coffee Shop | Удирдлагын самбар</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream: #F5EFE0;
+      --espresso: #2C1A0E;
+      --caramel: #C08B45;
+      --latte: #D4B483;
+      --foam: #FAF6EE;
+      --dark-roast: #1A0F07;
+      --line: rgba(44, 26, 14, .14);
+      --muted: #74665C;
+      --success: #2F7D4E;
+      --danger: #A44335;
+      --shadow: 0 14px 34px rgba(44, 26, 14, .09);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: var(--cream);
+      color: var(--espresso);
+      font-family: "DM Sans", sans-serif;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+    }
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      border-right: 1px solid var(--line);
+      background: rgba(250, 246, 238, .9);
+      backdrop-filter: blur(18px);
+      padding: 22px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 24px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand img {
+      width: 70px;
+      height: 56px;
+      border-radius: 8px;
+      object-fit: cover;
+      box-shadow: 0 8px 18px rgba(44, 26, 14, .16);
+    }
+    .brand strong {
+      display: block;
+      font-family: "Playfair Display", serif;
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+    .brand span {
+      color: var(--muted);
+      font-size: .78rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .menu {
+      display: grid;
+      align-content: start;
+      gap: 8px;
+    }
+    .menu button, .side-link {
+      min-height: 44px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--muted);
+      padding: 0 14px;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+      transition: .18s ease;
+    }
+    .menu button:hover, .side-link:hover {
+      background: var(--cream);
+      border-color: var(--line);
+      color: var(--espresso);
+    }
+    .menu button.active {
+      background: var(--espresso);
+      border-color: var(--espresso);
+      color: var(--foam);
+    }
+
+    .content { padding: 28px; overflow: hidden; }
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+    h1, h2, h3 {
+      font-family: "Playfair Display", serif;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+    h1 { font-size: clamp(2.2rem, 5vw, 4.2rem); line-height: .98; }
+    h2 { font-size: 1.8rem; line-height: 1.05; }
+    h3 { font-size: 1.25rem; }
+    .muted { color: var(--muted); line-height: 1.6; }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .section { display: none; animation: fadeUp .32s ease both; }
+    .section.active { display: block; }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--foam);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--foam);
+      padding: 18px;
+    }
+    .stat span {
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+    .stat strong {
+      display: block;
+      margin-top: 8px;
+      font-family: "Playfair Display", serif;
+      font-size: 2rem;
+    }
+
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    form { display: grid; gap: 12px; }
+    label {
+      display: grid;
+      gap: 7px;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    input, select, textarea {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--espresso);
+      padding: 10px 12px;
+      outline: none;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+    textarea { min-height: 86px; resize: vertical; }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--caramel);
+      box-shadow: 0 0 0 3px rgba(192, 139, 69, .12);
+    }
+    .check-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: .95rem;
+      color: var(--espresso);
+    }
+    .check-label input { width: auto; min-height: auto; }
+
+    .btn {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--espresso);
+      padding: 0 16px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(44,26,14,.11); }
+    .btn.primary { background: var(--espresso); border-color: var(--espresso); color: var(--foam); }
+    .btn.accent { background: var(--caramel); border-color: var(--caramel); color: #fff; }
+    .btn.danger { color: var(--danger); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .variant-list { display: grid; gap: 10px; }
+    .variant-row {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr)) auto;
+      gap: 10px;
+      align-items: end;
+    }
+    .variant-row label { font-size: .7rem; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: .92rem;
+    }
+    th {
+      color: var(--muted);
+      font-size: .72rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .thumb {
+      width: 72px;
+      height: 58px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: #E9DDCD;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0 10px;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: .78rem;
+    }
+    .status.confirmed, .status.completed { color: var(--success); border-color: rgba(47,125,78,.28); }
+    .status.cancelled { color: var(--danger); border-color: rgba(164,67,53,.28); }
+    .alert {
+      display: none;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--foam);
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      line-height: 1.55;
+    }
+    .alert.show { display: block; }
+    .alert.ok { color: var(--success); border-color: rgba(47,125,78,.25); }
+    .alert.err { color: var(--danger); border-color: rgba(164,67,53,.25); }
+    .empty {
+      border: 1px dashed var(--line);
+      border-radius: 16px;
+      padding: 22px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar {
+        position: static;
+        height: auto;
+        grid-template-rows: auto;
+      }
+      .menu { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stats, .grid, .grid.three, .variant-row { grid-template-columns: 1fr; }
+      .content { padding: 18px; }
+    }
+
+    @media (max-width: 600px) {
+      .top, .toolbar { display: grid; }
+      .menu { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+      .brand img { width: 58px; height: 48px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <a class="brand" href="/">
+        <img src="/assets/logo.png" alt="Grace Coffee Shop logo">
+        <span>
+          <strong>Grace Admin</strong>
+          <span>Event system</span>
+        </span>
+      </a>
+      <nav class="menu" aria-label="Admin цэс">
+        <button class="active" type="button" data-tab="products">Бүтээгдэхүүн</button>
+        <button type="button" data-tab="categories">Ангилал</button>
+        <button type="button" data-tab="orders">Захиалга</button>
+        <button type="button" data-tab="settings">Тохиргоо</button>
+        <a class="side-link" href="/">Нүүр хуудас</a>
+        <button type="button" id="logoutBtn">Гарах</button>
+      </nav>
+      <p class="muted" id="userLine">Хэрэглэгч шалгаж байна...</p>
+    </aside>
+
+    <main class="content">
+      <div class="top">
+        <div>
+          <h1>Event удирдлага</h1>
+          <p class="muted">Grace Coffee-ийн event багц, нэмэлт бүтээгдэхүүн, захиалга, төлбөрийн мэдээллийг эндээс удирдана.</p>
+        </div>
+        <button class="btn primary" type="button" id="refreshBtn">Шинэчлэх</button>
+      </div>
+
+      <div id="alert" class="alert"></div>
+
+      <div class="stats">
+        <div class="stat"><span>Бүтээгдэхүүн</span><strong id="statProducts">0</strong></div>
+        <div class="stat"><span>Ангилал</span><strong id="statCategories">0</strong></div>
+        <div class="stat"><span>Захиалга</span><strong id="statOrders">0</strong></div>
+        <div class="stat"><span>Нийт дүн</span><strong id="statRevenue">0₮</strong></div>
+      </div>
+
+      <section id="products" class="section active">
+        <div class="panel">
+          <div class="toolbar">
+            <h2>Event бүтээгдэхүүн нэмэх / засах</h2>
+            <button class="btn" type="button" id="resetProductBtn">Шинэ form</button>
+          </div>
+          <form id="productForm">
+            <input type="hidden" name="id">
+            <div class="grid">
+              <label>Нэр
+                <input name="name" required placeholder="Birthday Coffee Set">
+              </label>
+              <label>Ангилал
+                <select name="category" id="productCategory" required></select>
+              </label>
+            </div>
+            <label>Тайлбар
+              <textarea name="description" required placeholder="Event-д зориулсан багцын тайлбар"></textarea>
+            </label>
+            <label>Event / хүргэлтийн мэдээлэл
+              <input name="deliveryInfo" placeholder="Менежер холбогдож өдөр, цагийг баталгаажуулна">
+            </label>
+            <label class="check-label">
+              <input name="isFeatured" type="checkbox"> Онцлох бүтээгдэхүүн болгох
+            </label>
+            <div class="toolbar">
+              <h3>Сонголт, үнэ, нөөц</h3>
+              <button class="btn" type="button" id="addVariantBtn">Сонголт нэмэх</button>
+            </div>
+            <div class="variant-list" id="variantList"></div>
+            <button class="btn primary" type="submit" id="saveProductBtn">Хадгалах</button>
+          </form>
+        </div>
+
+        <div class="panel">
+          <div class="toolbar">
+            <h2>Бүтээгдэхүүний жагсаалт</h2>
+            <p class="muted">Public нүүр хуудсанд идэвхтэй бүтээгдэхүүнүүд харагдана.</p>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Зураг</th>
+                <th>Нэр</th>
+                <th>Ангилал</th>
+                <th>Үнэ / нөөц</th>
+                <th>Үйлдэл</th>
+              </tr>
+            </thead>
+            <tbody id="productRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="categories" class="section">
+        <div class="panel">
+          <h2>Ангилал нэмэх</h2>
+          <form id="categoryForm" class="grid" style="margin-top:14px;">
+            <input name="name" required placeholder="Жишээ: Event багц">
+            <button class="btn primary" type="submit">Нэмэх</button>
+          </form>
+        </div>
+        <div class="panel">
+          <h2>Ангиллын жагсаалт</h2>
+          <table style="margin-top:12px;">
+            <tbody id="categoryRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="orders" class="section">
+        <div class="panel">
+          <div class="toolbar">
+            <h2>Event захиалгууд</h2>
+            <p class="muted">Захиалгын төлөвийг менежер эсвэл захирал шинэчилнэ.</p>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Дугаар</th>
+                <th>Хэрэглэгч</th>
+                <th>Бүтээгдэхүүн</th>
+                <th>Нийт</th>
+                <th>Төлөв</th>
+              </tr>
+            </thead>
+            <tbody id="orderRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="settings" class="section">
+        <div class="panel">
+          <h2>Сайтын болон төлбөрийн тохиргоо</h2>
+          <form id="settingsForm" style="margin-top:14px;">
+            <div class="grid">
+              <label>Банк
+                <input name="bankName" required>
+              </label>
+              <label>Данс
+                <input name="bankAccount" required>
+              </label>
+              <label>Данс эзэмшигч
+                <input name="bankHolder" required>
+              </label>
+              <label>Facebook холбоос
+                <input name="facebookUrl" required>
+              </label>
+              <label>Үндсэн өнгө
+                <input name="primaryColor" type="color">
+              </label>
+              <label>Туслах өнгө
+                <input name="accentColor" type="color">
+              </label>
+            </div>
+            <button class="btn primary" type="submit">Тохиргоо хадгалах</button>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const token = localStorage.getItem("cb_token");
+    const storedUser = JSON.parse(localStorage.getItem("cb_user") || "null");
+    if (!token) window.location.href = "/login.html";
+
+    const state = {
+      user: storedUser,
+      products: [],
+      categories: [],
+      orders: [],
+      settings: null
+    };
+
+    const money = new Intl.NumberFormat("mn-MN", { maximumFractionDigits: 0 });
+    const alertBox = document.getElementById("alert");
+    const productForm = document.getElementById("productForm");
+    const categoryForm = document.getElementById("categoryForm");
+    const settingsForm = document.getElementById("settingsForm");
+    const variantList = document.getElementById("variantList");
+    const productRows = document.getElementById("productRows");
+    const categoryRows = document.getElementById("categoryRows");
+    const orderRows = document.getElementById("orderRows");
+    const productCategory = document.getElementById("productCategory");
+
+    function formatPrice(value) {
+      return `${money.format(Number(value || 0))}₮`;
+    }
+
+    function authHeaders(extra = {}) {
+      return {
+        Authorization: `Bearer ${token}`,
+        ...extra
+      };
+    }
+
+    async function api(path, options = {}) {
+      const response = await fetch(path, {
+        ...options,
+        headers: authHeaders({
+          ...(options.body ? { "Content-Type": "application/json" } : {}),
+          ...(options.headers || {})
+        })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (response.status === 401) {
+        localStorage.removeItem("cb_token");
+        localStorage.removeItem("cb_user");
+        window.location.href = "/login.html";
+        return data;
+      }
+      if (!response.ok) throw new Error(data.error || "Алдаа гарлаа");
+      return data;
+    }
+
+    function showAlert(message, type = "ok") {
+      alertBox.textContent = message;
+      alertBox.className = `alert show ${type}`;
+      window.clearTimeout(showAlert.timer);
+      showAlert.timer = window.setTimeout(() => {
+        alertBox.className = "alert";
+      }, 4200);
+    }
+
+    function firstVariant(product) {
+      return product.variants && product.variants.length ? product.variants[0] : {};
+    }
+
+    function addVariantRow(variant = {}) {
+      const row = document.createElement("div");
+      row.className = "variant-row";
+      row.innerHTML = `
+        <input type="hidden" data-field="_id" value="${variant._id || ""}">
+        <label>Сонголт
+          <input data-field="colorName" required value="${variant.colorName || ""}" placeholder="10 хүн">
+        </label>
+        <label>Тэмдэг өнгө
+          <input data-field="colorHex" type="color" value="${variant.colorHex || "#C08B45"}">
+        </label>
+        <label>Зураг URL
+          <input data-field="image" required value="${variant.image || ""}" placeholder="https://...">
+        </label>
+        <label>Үнэ
+          <input data-field="price" type="number" min="0" required value="${variant.price ?? ""}">
+        </label>
+        <label>Нөөц
+          <input data-field="stock" type="number" min="0" required value="${variant.stock ?? 0}">
+        </label>
+        <label>Хэмжээ
+          <input data-field="size" value="${variant.size || ""}" placeholder="10-12 хүн">
+        </label>
+        <button class="btn danger" type="button" data-remove-variant>Устгах</button>
+        <label style="grid-column:1/-1;">Агуулга
+          <input data-field="material" value="${variant.material || ""}" placeholder="Кофе сет, амттан, basic decoration">
+        </label>
+      `;
+      row.querySelector("[data-remove-variant]").addEventListener("click", () => {
+        if (variantList.children.length > 1) row.remove();
+      });
+      variantList.appendChild(row);
+    }
+
+    function resetProductForm() {
+      productForm.reset();
+      productForm.elements.id.value = "";
+      variantList.innerHTML = "";
+      addVariantRow();
+      document.getElementById("saveProductBtn").textContent = "Хадгалах";
+    }
+
+    function collectVariants() {
+      return [...variantList.querySelectorAll(".variant-row")].map((row) => {
+        const get = (field) => row.querySelector(`[data-field="${field}"]`).value.trim();
+        const id = get("_id");
+        const variant = {
+          colorName: get("colorName"),
+          colorHex: get("colorHex") || "#C08B45",
+          image: get("image"),
+          price: Number(get("price") || 0),
+          stock: Number(get("stock") || 0),
+          size: get("size"),
+          material: get("material")
+        };
+        if (id) variant._id = id;
+        return variant;
+      });
+    }
+
+    function renderCategoryOptions() {
+      productCategory.innerHTML = state.categories.map((category) => `
+        <option value="${category.name}">${category.name}</option>
+      `).join("");
+    }
+
+    function renderProducts() {
+      document.getElementById("statProducts").textContent = state.products.length;
+      if (!state.products.length) {
+        productRows.innerHTML = `<tr><td colspan="5"><div class="empty">Бүтээгдэхүүн алга байна.</div></td></tr>`;
+        return;
+      }
+      productRows.innerHTML = state.products.map((product) => {
+        const variant = firstVariant(product);
+        const totalStock = (product.variants || []).reduce((sum, item) => sum + Number(item.stock || 0), 0);
+        return `
+          <tr>
+            <td><img class="thumb" src="${variant.image || "/assets/logo.png"}" alt="${product.name}"></td>
+            <td><strong>${product.name}</strong><br><span class="muted">${product.description || ""}</span></td>
+            <td>${product.category}</td>
+            <td>${formatPrice(variant.price)}<br><span class="muted">Нийт нөөц: ${totalStock}</span></td>
+            <td>
+              <div class="actions">
+                <button class="btn" type="button" data-edit="${product._id}">Засах</button>
+                <button class="btn danger" type="button" data-delete="${product._id}">Идэвхгүй болгох</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      productRows.querySelectorAll("[data-edit]").forEach((button) => {
+        button.addEventListener("click", () => editProduct(button.dataset.edit));
+      });
+      productRows.querySelectorAll("[data-delete]").forEach((button) => {
+        button.addEventListener("click", () => deleteProduct(button.dataset.delete));
+      });
+    }
+
+    function renderCategories() {
+      document.getElementById("statCategories").textContent = state.categories.length;
+      renderCategoryOptions();
+      categoryRows.innerHTML = state.categories.length
+        ? state.categories.map((category) => `
+          <tr>
+            <td><strong>${category.name}</strong><br><span class="muted">${category.slug}</span></td>
+            <td style="text-align:right;"><button class="btn danger" type="button" data-delete-category="${category._id}">Устгах</button></td>
+          </tr>
+        `).join("")
+        : `<tr><td><div class="empty">Ангилал алга байна.</div></td></tr>`;
+      categoryRows.querySelectorAll("[data-delete-category]").forEach((button) => {
+        button.addEventListener("click", () => deleteCategory(button.dataset.deleteCategory));
+      });
+    }
+
+    function renderOrders() {
+      document.getElementById("statOrders").textContent = state.orders.length;
+      const revenue = state.orders
+        .filter((order) => order.status !== "cancelled")
+        .reduce((sum, order) => sum + Number(order.total || 0), 0);
+      document.getElementById("statRevenue").textContent = formatPrice(revenue);
+
+      if (!state.orders.length) {
+        orderRows.innerHTML = `<tr><td colspan="5"><div class="empty">Захиалга алга байна.</div></td></tr>`;
+        return;
+      }
+
+      const statuses = [
+        ["pending", "Хүлээгдэж буй"],
+        ["confirmed", "Батлагдсан"],
+        ["delivering", "Бэлтгэж байна"],
+        ["completed", "Дууссан"],
+        ["cancelled", "Цуцлагдсан"]
+      ];
+
+      orderRows.innerHTML = state.orders.map((order) => `
+        <tr>
+          <td><strong>${order.orderRef}</strong><br><span class="muted">${new Date(order.createdAt).toLocaleString("mn-MN")}</span></td>
+          <td>${order.customerName}<br><span class="muted">${order.phone}<br>${order.address || ""}</span></td>
+          <td>${(order.items || []).map((item) => `${item.name} (${item.colorName || "сонголт"}) x ${item.quantity}`).join("<br>")}</td>
+          <td><strong>${formatPrice(order.total)}</strong><br><span class="muted">${order.paymentMethod}</span></td>
+          <td>
+            <span class="status ${order.status}">${statuses.find((item) => item[0] === order.status)?.[1] || order.status}</span>
+            <select data-order-status="${order._id}" style="margin-top:8px;">
+              ${statuses.map(([value, label]) => `<option value="${value}" ${order.status === value ? "selected" : ""}>${label}</option>`).join("")}
+            </select>
+          </td>
+        </tr>
+      `).join("");
+
+      orderRows.querySelectorAll("[data-order-status]").forEach((select) => {
+        select.addEventListener("change", () => updateOrderStatus(select.dataset.orderStatus, select.value));
+      });
+    }
+
+    function renderSettings() {
+      if (!state.settings) return;
+      ["bankName", "bankAccount", "bankHolder", "facebookUrl", "primaryColor", "accentColor"].forEach((key) => {
+        if (settingsForm.elements[key]) settingsForm.elements[key].value = state.settings[key] || "";
+      });
+    }
+
+    function editProduct(productId) {
+      const product = state.products.find((item) => item._id === productId);
+      if (!product) return;
+      productForm.elements.id.value = product._id;
+      productForm.elements.name.value = product.name;
+      productForm.elements.category.value = product.category;
+      productForm.elements.description.value = product.description || "";
+      productForm.elements.deliveryInfo.value = product.deliveryInfo || "";
+      productForm.elements.isFeatured.checked = Boolean(product.isFeatured);
+      variantList.innerHTML = "";
+      (product.variants || []).forEach(addVariantRow);
+      if (!variantList.children.length) addVariantRow();
+      document.getElementById("saveProductBtn").textContent = "Шинэчлэх";
+      document.getElementById("products").scrollIntoView({ behavior: "smooth" });
+    }
+
+    async function deleteProduct(productId) {
+      if (!confirm("Энэ бүтээгдэхүүнийг public талаас нуух уу?")) return;
+      await api(`/api/shop/products/${productId}`, { method: "DELETE" });
+      showAlert("Бүтээгдэхүүн идэвхгүй боллоо.");
+      await loadData();
+    }
+
+    async function deleteCategory(categoryId) {
+      if (!confirm("Энэ ангиллыг устгах уу?")) return;
+      await api(`/api/shop/categories/${categoryId}`, { method: "DELETE" });
+      showAlert("Ангилал устгагдлаа.");
+      await loadData();
+    }
+
+    async function updateOrderStatus(orderId, status) {
+      await api(`/api/shop/orders/${orderId}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ status })
+      });
+      showAlert("Захиалгын төлөв шинэчлэгдлээ.");
+      await loadData();
+    }
+
+    async function loadData() {
+      const [me, settings, categories, products, orders] = await Promise.all([
+        api("/api/auth/me"),
+        api("/api/shop/settings"),
+        api("/api/shop/categories"),
+        api("/api/shop/products"),
+        api("/api/shop/orders")
+      ]);
+      state.user = me.user;
+      state.settings = settings.settings;
+      state.categories = categories.categories || [];
+      state.products = products.products || [];
+      state.orders = orders.orders || [];
+      localStorage.setItem("cb_user", JSON.stringify(state.user));
+      document.getElementById("userLine").textContent = `${state.user.name} · ${state.user.role}`;
+      renderCategories();
+      renderProducts();
+      renderOrders();
+      renderSettings();
+    }
+
+    productForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = new FormData(productForm);
+      const variants = collectVariants();
+      if (!variants.length || variants.some((variant) => !variant.colorName || !variant.image)) {
+        showAlert("Сонголтын нэр болон зураг заавал оруулна уу.", "err");
+        return;
+      }
+      const payload = {
+        name: form.get("name"),
+        category: form.get("category"),
+        description: form.get("description"),
+        deliveryInfo: form.get("deliveryInfo"),
+        isFeatured: productForm.elements.isFeatured.checked,
+        variants
+      };
+      const id = form.get("id");
+      await api(id ? `/api/shop/products/${id}` : "/api/shop/products", {
+        method: id ? "PATCH" : "POST",
+        body: JSON.stringify(payload)
+      });
+      showAlert(id ? "Бүтээгдэхүүн шинэчлэгдлээ." : "Бүтээгдэхүүн нэмэгдлээ.");
+      resetProductForm();
+      await loadData();
+    });
+
+    categoryForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = new FormData(categoryForm);
+      await api("/api/shop/categories", {
+        method: "POST",
+        body: JSON.stringify({ name: form.get("name") })
+      });
+      categoryForm.reset();
+      showAlert("Ангилал нэмэгдлээ.");
+      await loadData();
+    });
+
+    settingsForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = new FormData(settingsForm);
+      await api("/api/shop/settings", {
+        method: "PATCH",
+        body: JSON.stringify(Object.fromEntries(form.entries()))
+      });
+      showAlert("Тохиргоо хадгалагдлаа.");
+      await loadData();
+    });
+
+    document.querySelectorAll("[data-tab]").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll("[data-tab]").forEach((item) => item.classList.remove("active"));
+        document.querySelectorAll(".section").forEach((section) => section.classList.remove("active"));
+        button.classList.add("active");
+        document.getElementById(button.dataset.tab).classList.add("active");
+      });
+    });
+
+    document.getElementById("addVariantBtn").addEventListener("click", () => addVariantRow());
+    document.getElementById("resetProductBtn").addEventListener("click", resetProductForm);
+    document.getElementById("refreshBtn").addEventListener("click", () => loadData().then(() => showAlert("Мэдээлэл шинэчлэгдлээ.")));
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("cb_token");
+      localStorage.removeItem("cb_user");
+      window.location.href = "/login.html";
+    });
+
+    resetProductForm();
+    loadData().catch((err) => showAlert(err.message, "err"));
+  </script>
+</body>
+</html>

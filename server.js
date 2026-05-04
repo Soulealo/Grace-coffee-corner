@@ -17,7 +17,12 @@ const shopRoutes = require('./routes/shop');
 
 const app = express();
 const port = process.env.PORT || 3000;
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
+const defaultOrigins = [
+  `http://localhost:${port}`,
+  `http://127.0.0.1:${port}`,
+  `http://[::1]:${port}`
+];
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || defaultOrigins.join(','))
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean);

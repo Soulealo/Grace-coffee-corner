@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grace Coffee Shop — Event Booking</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5EFE0;
+    --espresso: #2C1A0E;
+    --caramel: #C08B45;
+    --latte: #D4B483;
+    --foam: #FAF6EE;
+    --dark-roast: #1A0F07;
+    --steam: rgba(192,139,69,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--espresso);
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Background texture ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(192,139,69,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 90%, rgba(192,139,69,0.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Header ── */
+  header {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 60px 20px 40px;
+    border-bottom: 1px solid rgba(192,139,69,0.25);
+  }
+
+  .logo-tag {
+    display: inline-block;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--caramel);
+    margin-bottom: 14px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 400;
+    color: var(--cream);
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.15s forwards;
+  }
+
+  header h1 em {
+    font-style: italic;
+    color: var(--caramel);
+  }
+
+  .header-sub {
+    margin-top: 12px;
+    font-size: 14px;
+    color: var(--latte);
+    letter-spacing: 0.5px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.3s forwards;
+  }
+
+  .quick-links {
+    margin-top: 24px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.38s forwards;
+  }
+
+  .quick-links a {
+    color: var(--latte);
+    border: 1px solid rgba(192,139,69,0.3);
+    border-radius: 50px;
+    padding: 10px 18px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .quick-links a:hover {
+    color: var(--caramel);
+    background: rgba(192,139,69,0.08);
+  }
+
+  /* ── Main container ── */
+  .container {
+    position: relative;
+    z-index: 10;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 50px 24px 80px;
+  }
+
+  /* ── Packages ── */
+  .section-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--caramel);
+    margin-bottom: 20px;
+  }
+
+  .packages {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 50px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.45s forwards;
+  }
+
+  .package-card {
+    position: relative;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(192,139,69,0.2);
+    border-radius: 12px;
+    padding: 22px 18px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: center;
+  }
+
+  .package-card:hover {
+    background: rgba(192,139,69,0.08);
+    border-color: rgba(192,139,69,0.5);
+    transform: translateY(-2px);
+  }
+
+  .package-card.selected {
+    background: rgba(192,139,69,0.15);
+    border-color: var(--caramel);
+    box-shadow: 0 0 0 1px var(--caramel);
+  }
+
+  .package-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .package-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--cream);
+    margin-bottom: 6px;
+  }
+
+  .package-price {
+    font-size: 13px;
+    color: var(--caramel);
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .package-desc {
+    font-size: 11.5px;
+    color: var(--latte);
+    line-height: 1.6;
+  }
+
+  .package-badge {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--caramel);
+    color: var(--espresso);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  /* ── Form ── */
+  .form-section {
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.6s forwards;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-group.full {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--latte);
+  }
+
+  input, select, textarea {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(192,139,69,0.25);
+    border-radius: 8px;
+    padding: 13px 16px;
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    transition: all 0.2s ease;
+    outline: none;
+    width: 100%;
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: rgba(212, 180, 131, 0.35);
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--caramel);
+    background: rgba(192,139,69,0.07);
+    box-shadow: 0 0 0 3px rgba(192,139,69,0.1);
+  }
+
+  select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23C08B45' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 38px;
+  }
+
+  select option {
+    background: var(--espresso);
+    color: var(--cream);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 90px;
+    line-height: 1.6;
+  }
+
+  /* ── Date time row ── */
+  .datetime-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  /* ── Divider ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(192,139,69,0.3), transparent);
+    margin: 36px 0;
+  }
+
+  /* ── Guest counter ── */
+  .guest-counter {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(192,139,69,0.25);
+    border-radius: 8px;
+    padding: 10px 16px;
+  }
+
+  .guest-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(192,139,69,0.4);
+    background: transparent;
+    color: var(--caramel);
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    padding: 0;
+  }
+
+  .guest-btn:hover {
+    background: rgba(192,139,69,0.15);
+    border-color: var(--caramel);
+  }
+
+  .guest-count {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: var(--cream);
+    min-width: 28px;
+    text-align: center;
+  }
+
+  .guest-label-small {
+    font-size: 12px;
+    color: var(--latte);
+    margin-left: 4px;
+  }
+
+  /* ── Summary bar ── */
+  .summary-bar {
+    background: rgba(192,139,69,0.08);
+    border: 1px solid rgba(192,139,69,0.25);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 30px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .summary-item {
+    text-align: center;
+  }
+
+  .summary-item .val {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: var(--caramel);
+  }
+
+  .summary-item .key {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--latte);
+    margin-top: 2px;
+  }
+
+  .summary-divider {
+    width: 1px;
+    height: 36px;
+    background: rgba(192,139,69,0.25);
+  }
+
+  /* ── Submit ── */
+  .submit-wrap {
+    text-align: center;
+    margin-top: 36px;
+  }
+
+  .btn-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--caramel);
+    color: var(--dark-roast);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 50px;
+    padding: 16px 48px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-submit::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.15);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .btn-submit:hover::before { transform: translateX(0); }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(192,139,69,0.35); }
+  .btn-submit:active { transform: translateY(0); }
+  .btn-submit:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+    transform: none;
+  }
+
+  .btn-icon { font-size: 16px; }
+
+  /* ── Success modal ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26,15,7,0.85);
+    backdrop-filter: blur(6px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .modal-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal {
+    background: var(--espresso);
+    border: 1px solid rgba(192,139,69,0.35);
+    border-radius: 20px;
+    padding: 50px 42px;
+    max-width: 460px;
+    width: 100%;
+    text-align: center;
+    transform: scale(0.92) translateY(20px);
+    transition: transform 0.3s ease;
+  }
+
+  .modal-overlay.show .modal { transform: scale(1) translateY(0); }
+
+  .modal-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(192,139,69,0.15);
+    border: 1px solid rgba(192,139,69,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin: 0 auto 24px;
+  }
+
+  .modal h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem;
+    color: var(--cream);
+    margin-bottom: 10px;
+  }
+
+  .modal p {
+    font-size: 13.5px;
+    color: var(--latte);
+    line-height: 1.7;
+    margin-bottom: 6px;
+  }
+
+  .booking-ref {
+    display: inline-block;
+    background: rgba(192,139,69,0.12);
+    border: 1px dashed rgba(192,139,69,0.4);
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--caramel);
+    letter-spacing: 2px;
+    margin: 16px 0 24px;
+  }
+
+  .btn-close {
+    background: transparent;
+    border: 1px solid rgba(192,139,69,0.4);
+    color: var(--caramel);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 11px 32px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-close:hover { background: rgba(192,139,69,0.1); }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Validation error ── */
+  .error-msg {
+    font-size: 11px;
+    color: #e07070;
+    margin-top: 4px;
+    display: none;
+  }
+
+  .form-alert {
+    display: none;
+    border: 1px solid rgba(224,112,112,0.35);
+    background: rgba(224,112,112,0.09);
+    border-radius: 10px;
+    color: #ffb2a8;
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 13px 16px;
+    margin-top: 20px;
+  }
+
+  .form-alert.show { display: block; }
+
+  .form-group.has-error input,
+  .form-group.has-error select {
+    border-color: #e07070;
+  }
+
+  .form-group.has-error .error-msg { display: block; }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .packages { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+    .datetime-row { grid-template-columns: 1fr; }
+    .summary-bar { flex-direction: column; align-items: flex-start; }
+    .summary-divider { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-tag">Grace Coffee Shop</div>
+  <h1>Event <em>Захиалга</em></h1>
+  <p class="header-sub">Таны тусгай мөчийг бид хамтдаа бүтээнэ</p>
+  <nav class="quick-links">
+    <a href="/check.html">Захиалга шалгах</a>
+    <a href="/login.html">Удирдлага</a>
+  </nav>
+</header>
+
+<div class="container">
+
+  <!-- Package selection -->
+  <div class="section-label">01 — Багцаа сонгоно уу</div>
+  <div class="packages">
+    <label class="package-card" id="card-basic">
+      <input type="radio" name="package" value="basic" checked>
+      <div class="package-name">Basic</div>
+      <div class="package-price">₮150,000-аас</div>
+      <div class="package-desc">Энгийн арга хэмжээнд тохиромжтой. Тоног төхөөрөмж, үйлчилгээ багтсан.</div>
+    </label>
+    <label class="package-card" id="card-standard">
+      <input type="radio" name="package" value="standard">
+      <div class="package-badge">Алдартай</div>
+      <div class="package-name">Standard</div>
+      <div class="package-price">₮280,000-аас</div>
+      <div class="package-desc">Чимэглэл, кофе сет, фото зай нэмэлтээр орсон бүрэн багц.</div>
+    </label>
+    <label class="package-card" id="card-premium">
+      <input type="radio" name="package" value="premium">
+      <div class="package-name">Premium</div>
+      <div class="package-price">₮480,000-аас</div>
+      <div class="package-desc">Ганцаарчилсан үйлчилгээ, тусгай менюгийн сонголт, бүх зүйл хамрагдсан.</div>
+    </label>
+  </div>
+
+  <!-- Form -->
+  <div class="form-section">
+    <div class="section-label" style="margin-bottom:24px">02 — Мэдээлэл бөглөнө үү</div>
+
+    <form id="bookingForm" novalidate>
+
+      <div class="form-grid">
+        <div class="form-group" id="grp-name">
+          <label for="clientName">Таны нэр</label>
+          <input type="text" id="clientName" placeholder="Нэр, овог">
+          <span class="error-msg">Нэрээ оруулна уу</span>
+        </div>
+        <div class="form-group" id="grp-phone">
+          <label for="phone">Утасны дугаар</label>
+          <input type="tel" id="phone" placeholder="8888 8888">
+          <span class="error-msg">Зөв дугаар оруулна уу</span>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group" id="grp-email">
+          <label for="email">И-мэйл (заавал биш)</label>
+          <input type="email" id="email" placeholder="example@mail.com">
+          <span class="error-msg">И-мэйл хаяг буруу байна</span>
+        </div>
+        <div class="form-group" id="grp-eventtype">
+          <label for="eventType">Арга хэмжээний төрөл</label>
+          <select id="eventType">
+            <option value="">— Сонгоно уу —</option>
+            <option value="birthday">Төрсөн өдрийн баяр 🎂</option>
+            <option value="anniversary">Ойн баяр 🥂</option>
+            <option value="corporate">Корпорат уулзалт 💼</option>
+            <option value="graduation">Төгсөлтийн баяр 🎓</option>
+            <option value="wedding">Хуримын дараах арга хэмжээ 💍</option>
+            <option value="baby">Хүүхдийн баяр 🎈</option>
+            <option value="other">Бусад</option>
+          </select>
+          <span class="error-msg">Төрлийг сонгоно уу</span>
+        </div>
+      </div>
+
+      <div class="datetime-row">
+        <div class="form-group" id="grp-date">
+          <label for="eventDate">Арга хэмжээний огноо</label>
+          <input type="date" id="eventDate">
+          <span class="error-msg">Огноо сонгоно уу</span>
+        </div>
+        <div class="form-group" id="grp-time">
+          <label for="eventTime">Эхлэх цаг</label>
+          <select id="eventTime">
+            <option value="">— Цаг —</option>
+            <option value="09:00">09:00</option>
+            <option value="10:00">10:00</option>
+            <option value="11:00">11:00</option>
+            <option value="12:00">12:00</option>
+            <option value="13:00">13:00</option>
+            <option value="14:00">14:00</option>
+            <option value="15:00">15:00</option>
+            <option value="16:00">16:00</option>
+            <option value="17:00">17:00</option>
+            <option value="18:00">18:00</option>
+            <option value="19:00">19:00</option>
+          </select>
+          <span class="error-msg">Цаг сонгоно уу</span>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:20px" id="grp-guests">
+        <label>Зочны тоо</label>
+        <div class="guest-counter">
+          <button type="button" class="guest-btn" id="minusBtn">−</button>
+          <span class="guest-count" id="guestCount">10</span>
+          <span class="guest-label-small">хүн</span>
+          <button type="button" class="guest-btn" id="plusBtn">+</button>
+        </div>
+        <span class="error-msg" id="guestError">Зочны тоо 1-ээс их байх ёстой</span>
+      </div>
+
+      <div class="form-group full">
+        <label for="notes">Тэмдэглэл / Онцгой хүсэлт</label>
+        <textarea id="notes" placeholder="Жишээ нь: торт захиалах, тусгай суудлын байршил, хоолны хязгаарлалт..."></textarea>
+      </div>
+
+      <!-- Summary -->
+      <div class="divider"></div>
+
+      <div class="summary-bar" id="summaryBar">
+        <div class="summary-item">
+          <div class="val" id="sumPackage">Basic</div>
+          <div class="key">Багц</div>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-item">
+          <div class="val" id="sumDate">—</div>
+          <div class="key">Огноо</div>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-item">
+          <div class="val" id="sumTime">—</div>
+          <div class="key">Цаг</div>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-item">
+          <div class="val" id="sumGuests">10</div>
+          <div class="key">Зочид</div>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-item">
+          <div class="val" id="sumPrice">₮150,000+</div>
+          <div class="key">Эхлэх үнэ</div>
+        </div>
+      </div>
+
+      <div class="form-alert" id="formAlert"></div>
+
+      <div class="submit-wrap">
+        <button type="submit" class="btn-submit">
+          <span class="btn-icon">✦</span>
+          Захиалга илгээх
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-icon">✦</div>
+    <h2>Захиалга амжилттай!</h2>
+    <p>Таны захиалга хүлээн авлаа. Бид тантай удахгүй холбогдоно.</p>
+    <div class="booking-ref" id="bookingRef">—</div>
+    <p style="font-size:12px; margin-bottom: 0;">Thank you, Grace Coffee Shop</p>
+    <br>
+    <button class="btn-close" onclick="closeModal()">Хаах</button>
+  </div>
+</div>
+
+<script>
+  // Package selection highlight
+  const cards = document.querySelectorAll('.package-card');
+  const radios = document.querySelectorAll('input[name="package"]');
+  const prices = { basic: '₮150,000+', standard: '₮280,000+', premium: '₮480,000+' };
+  const pkgNames = { basic: 'Basic', standard: 'Standard', premium: 'Premium' };
+  const submitBtn = document.querySelector('.btn-submit');
+  const formAlert = document.getElementById('formAlert');
+
+  function formatPrice(value) {
+    return '₮' + new Intl.NumberFormat('mn-MN').format(value) + '+';
+  }
+
+  fetch('/api/packages')
+    .then(res => res.ok ? res.json() : Promise.reject(new Error('Багцын үнэ авахад алдаа гарлаа')))
+    .then(data => {
+      data.packages.forEach(pkg => {
+        prices[pkg.code] = formatPrice(pkg.price);
+        const card = document.getElementById(`card-${pkg.code}`);
+        const priceEl = card?.querySelector('.package-price');
+        if (priceEl) priceEl.textContent = prices[pkg.code];
+      });
+      updatePackageUI();
+    })
+    .catch(() => {
+      updatePackageUI();
+    });
+
+  function updatePackageUI() {
+    cards.forEach(c => c.classList.remove('selected'));
+    radios.forEach(r => {
+      if (r.checked) {
+        r.closest('.package-card').classList.add('selected');
+        document.getElementById('sumPackage').textContent = pkgNames[r.value];
+        document.getElementById('sumPrice').textContent = prices[r.value];
+      }
+    });
+  }
+  cards.forEach(c => c.addEventListener('click', () => {
+    setTimeout(updatePackageUI, 10);
+  }));
+  // Default select basic
+  document.getElementById('card-basic').classList.add('selected');
+
+  // Guest counter
+  let guests = 10;
+  document.getElementById('minusBtn').addEventListener('click', () => {
+    if (guests > 1) { guests--; update(); }
+  });
+  document.getElementById('plusBtn').addEventListener('click', () => {
+    if (guests < 200) { guests++; update(); }
+  });
+  function update() {
+    document.getElementById('guestCount').textContent = guests;
+    document.getElementById('sumGuests').textContent = guests;
+  }
+
+  // Live summary update
+  document.getElementById('eventDate').addEventListener('change', function() {
+    if (this.value) {
+      const d = new Date(this.value);
+      document.getElementById('sumDate').textContent =
+        d.toLocaleDateString('mn-MN', { month: 'short', day: 'numeric' });
+    }
+  });
+  document.getElementById('eventTime').addEventListener('change', function() {
+    document.getElementById('sumTime').textContent = this.value || '—';
+  });
+
+  // Set min date to today
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('eventDate').min = today;
+
+  function showFormError(message) {
+    formAlert.textContent = message || 'Сервертэй холбогдоход алдаа гарлаа';
+    formAlert.classList.add('show');
+  }
+
+  function clearFormError() {
+    formAlert.textContent = '';
+    formAlert.classList.remove('show');
+  }
+
+  // Form validation & submit
+  document.getElementById('bookingForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    let valid = true;
+    clearFormError();
+
+    function check(grpId, condition) {
+      const g = document.getElementById(grpId);
+      if (!condition) { g.classList.add('has-error'); valid = false; }
+      else g.classList.remove('has-error');
+    }
+
+    check('grp-name', document.getElementById('clientName').value.trim().length > 1);
+    check('grp-phone', /^\d{7,8}$/.test(document.getElementById('phone').value.replace(/\s/g,'')));
+    const email = document.getElementById('email').value.trim();
+    check('grp-email', !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+    check('grp-eventtype', document.getElementById('eventType').value !== '');
+    check('grp-date', document.getElementById('eventDate').value !== '');
+    check('grp-time', document.getElementById('eventTime').value !== '');
+
+    if (!valid) {
+      document.querySelector('.has-error input, .has-error select')?.focus();
+      return;
+    }
+
+    const payload = {
+      clientName: document.getElementById('clientName').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      email,
+      package: document.querySelector('input[name="package"]:checked').value,
+      eventType: document.getElementById('eventType').value,
+      eventDate: document.getElementById('eventDate').value,
+      eventTime: document.getElementById('eventTime').value,
+      guestCount: guests,
+      notes: document.getElementById('notes').value.trim()
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.dataset.originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Илгээж байна...';
+
+    fetch('/api/bookings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(async res => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Захиалга илгээхэд алдаа гарлаа');
+        return data;
+      })
+      .then(data => {
+        document.getElementById('bookingRef').textContent = data.booking.bookingRef;
+        document.getElementById('modalOverlay').classList.add('show');
+      })
+      .catch(err => {
+        showFormError(err.message || 'Сүлжээний алдаа гарлаа');
+      })
+      .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span class="btn-icon">✦</span> Захиалга илгээх';
+      });
+  });
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('show');
+    document.getElementById('bookingForm').reset();
+    guests = 10;
+    update();
+    updatePackageUI();
+    document.getElementById('sumDate').textContent = '—';
+    document.getElementById('sumTime').textContent = '—';
+    clearFormError();
+    // remove errors
+    document.querySelectorAll('.form-group').forEach(g => g.classList.remove('has-error'));
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grace Coffee Shop — Loyalty</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --cream:#F5EFE0; --espresso:#2C1A0E; --caramel:#C08B45; --latte:#D4B483; --foam:#FAF6EE; --dark-roast:#1A0F07; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { min-height:100vh; background:var(--espresso); color:var(--cream); font-family:'DM Sans',sans-serif; font-weight:300; }
+  body::before { content:''; position:fixed; inset:0; background:radial-gradient(ellipse 80% 60% at 20% 10%, rgba(192,139,69,.13), transparent 60%), radial-gradient(ellipse 60% 80% at 80% 90%, rgba(192,139,69,.08), transparent 60%); pointer-events:none; }
+  header, main { position:relative; z-index:1; }
+  header { max-width:1040px; margin:0 auto; padding:24px; display:flex; justify-content:space-between; gap:16px; align-items:center; }
+  a { color:var(--latte); text-decoration:none; }
+  .brand { color:var(--caramel); letter-spacing:2.5px; text-transform:uppercase; font-weight:500; }
+  nav { display:flex; gap:12px; flex-wrap:wrap; }
+  nav a { border:1px solid rgba(192,139,69,.3); border-radius:50px; padding:10px 16px; background:rgba(255,255,255,.03); }
+  main { max-width:1040px; margin:0 auto; padding:48px 24px 76px; animation:fadeUp .55s ease both; }
+  h1 { font-family:'Playfair Display',serif; font-size:clamp(2.8rem,8vw,5.8rem); font-weight:400; line-height:.98; max-width:760px; }
+  h1 em { color:var(--caramel); }
+  .lead { color:var(--latte); line-height:1.8; max-width:620px; margin:22px 0 28px; }
+  .grid { display:grid; grid-template-columns:.9fr 1.1fr; gap:18px; }
+  .card { border:1px solid rgba(192,139,69,.26); border-radius:14px; background:rgba(255,255,255,.045); padding:24px; }
+  .points { font-family:'Playfair Display',serif; font-size:4rem; color:var(--caramel); }
+  button, .btn { display:inline-flex; align-items:center; justify-content:center; min-height:44px; border:1px solid rgba(192,139,69,.4); border-radius:50px; padding:0 18px; background:transparent; color:var(--caramel); font:inherit; cursor:pointer; text-decoration:none; }
+  button.primary, .btn.primary { background:var(--caramel); color:var(--dark-roast); border-color:var(--caramel); }
+  .actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+  .log { display:grid; gap:10px; margin-top:12px; }
+  .row { display:flex; justify-content:space-between; gap:14px; border-bottom:1px solid rgba(192,139,69,.18); padding:12px 0; color:var(--latte); }
+  .row strong { color:var(--cream); }
+  .muted { color:var(--latte); line-height:1.7; }
+  @keyframes fadeUp { from{opacity:0; transform:translateY(18px);} to{opacity:1; transform:translateY(0);} }
+  @media (max-width:600px){ header{align-items:flex-start; flex-direction:column;} .grid{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="/"><img src="/assets/logo.png" alt="Grace Coffee Shop logo" style="width:72px;height:52px;object-fit:cover;border-radius:8px;"></a>
+    <nav>
+      <a href="/landing.html">Нүүр</a>
+      <a href="/">Event</a>
+      <a id="authLink" href="/login.html">Нэвтрэх</a>
+    </nav>
+  </header>
+  <main>
+    <h1>Loyalty <em>карт</em></h1>
+    <p class="lead">Кофе болон event захиалгынхаа оноог цуглуулж, дараагийн урамшуулал, хөнгөлөлтдөө ашиглаарай.</p>
+    <div class="grid">
+      <section class="card">
+        <p class="muted" id="userLine">Нэвтэрч оноогоо харна уу.</p>
+        <div class="points" id="points">0</div>
+        <p class="muted">цугларсан оноо</p>
+        <div class="actions">
+          <a class="btn primary" href="/login.html" id="loginBtn">Нэвтрэх</a>
+          <button id="redeemBtn">100 оноо ашиглах</button>
+        </div>
+      </section>
+      <section class="card">
+        <h2 style="font-family:'Playfair Display',serif; font-weight:400; margin-bottom:8px;">Онооны түүх</h2>
+        <div class="log" id="logRows"><p class="muted">Одоогоор мэдээлэл алга.</p></div>
+      </section>
+    </div>
+  </main>
+<script>
+  const token = localStorage.getItem('cb_token');
+  const authLink = document.getElementById('authLink');
+  const loginBtn = document.getElementById('loginBtn');
+  const redeemBtn = document.getElementById('redeemBtn');
+
+  if (token) {
+    authLink.textContent = 'Профайл';
+    authLink.href = '/account.html';
+    loginBtn.textContent = 'Профайл';
+    loginBtn.href = '/account.html';
+  }
+
+  function headers() { return { 'Content-Type':'application/json', Authorization:`Bearer ${token}` }; }
+
+  function loadLoyalty() {
+    if (!token) return;
+    fetch('/api/loyalty/me', { headers:headers() })
+      .then(async res => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Алдаа гарлаа');
+        return data;
+      })
+      .then(data => {
+        document.getElementById('userLine').textContent = `${data.user.name} · ${data.user.email}`;
+        document.getElementById('points').textContent = data.user.loyaltyPoints || 0;
+        document.getElementById('logRows').innerHTML = data.logs.length ? data.logs.map(log => `
+          <div class="row"><span><strong>${log.points > 0 ? '+' : ''}${log.points}</strong> оноо<br>${log.description || ''}</span><span>${new Date(log.createdAt).toLocaleDateString('mn-MN')}</span></div>
+        `).join('') : '<p class="muted">Одоогоор мэдээлэл алга.</p>';
+      })
+      .catch(() => {});
+  }
+
+  redeemBtn.addEventListener('click', () => {
+    if (!token) return window.location.href = '/login.html';
+    fetch('/api/loyalty/redeem', {
+      method:'POST',
+      headers:headers(),
+      body:JSON.stringify({ points:100, description:'Loyalty 100 оноо ашиглав' })
+    }).then(loadLoyalty);
+  });
+
+  loadLoyalty();
+</script>
+</body>
+</html>
+

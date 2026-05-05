@@ -1,0 +1,194 @@
+# Grace Coffee Shop Event & Loyalty
+
+Grace Coffee Shop event booking, product add-on, loyalty, profile, and admin dashboard web app.
+
+This project lets users:
+- browse event packages and add-on products
+- add products to cart and place an order
+- choose an event date and an available time slot
+- sign in, manage profile data, and view loyalty points
+- view their own order history
+
+It also lets admins and managers:
+- manage products and categories
+- update shop settings
+- review orders and change order status
+
+## Stack
+
+- Backend: `Node.js`, `Express`
+- Database: `MongoDB`, `Mongoose`
+- Authentication: `JWT`, `bcryptjs`
+- Frontend: Vanilla `HTML`, `CSS`, `JavaScript`
+
+## Features
+
+- Event storefront with category filtering
+- Product detail drawer and cart checkout
+- Event date picker with free time slot selection
+- User registration, login, logout, and profile update
+- Loyalty points and loyalty history
+- My orders view in the account page
+- Admin dashboard for products, categories, settings, and orders
+- Seed and upsert scripts for initial data and event add-ons
+
+## Pages
+
+- `/` - main storefront
+- `/landing.html` - event storefront
+- `/login.html` - login and register
+- `/account.html` - profile, loyalty, and user orders
+- `/loyalty.html` - loyalty page
+- `/dashboard.html` - admin and manager dashboard
+- `/check.html` - order check page
+
+## Project Structure
+
+```text
+.
+|-- assets/
+|-- middleware/
+|-- models/
+|-- routes/
+|-- scripts/
+|-- account.html
+|-- check.html
+|-- dashboard.html
+|-- landing.html
+|-- login.html
+|-- loyalty.html
+|-- seed.js
+|-- server.js
+`-- package.json
+```
+
+## Environment Variables
+
+Create a `.env` file with values like these:
+
+```env
+MONGODB_URI=mongodb://127.0.0.1:27017/grace-coffee
+JWT_SECRET=replace_with_a_strong_secret
+PORT=3000
+ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+```
+
+Notes:
+- `MONGODB_URI` - MongoDB connection string
+- `JWT_SECRET` - token signing secret
+- `PORT` - server port, defaults to `3000`
+- `ALLOWED_ORIGINS` - CORS allowlist
+
+## Installation
+
+```bash
+npm install
+```
+
+## Run Locally
+
+1. Configure `.env`
+2. Seed the database
+3. Start the server
+
+```bash
+npm run seed
+npm start
+```
+
+Open:
+
+```text
+http://localhost:3000
+```
+
+## Scripts
+
+- `npm start` - start the server
+- `npm run dev` - development start
+- `npm run seed` - seed initial data and settings
+
+## API Overview
+
+### Auth
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
+- `GET /api/auth/me`
+- `PATCH /api/auth/me`
+
+### Loyalty
+
+- `GET /api/loyalty/me`
+- `POST /api/loyalty/redeem`
+- `POST /api/loyalty/earn`
+
+### Shop
+
+- `GET /api/shop/settings`
+- `PATCH /api/shop/settings`
+- `GET /api/shop/categories`
+- `POST /api/shop/categories`
+- `PATCH /api/shop/categories/:id`
+- `DELETE /api/shop/categories/:id`
+- `GET /api/shop/products`
+- `GET /api/shop/products/:id`
+- `POST /api/shop/products`
+- `PATCH /api/shop/products/:id`
+- `DELETE /api/shop/products/:id`
+- `GET /api/shop/availability?date=YYYY-MM-DD`
+- `POST /api/shop/orders`
+- `GET /api/shop/orders`
+- `GET /api/shop/my-orders`
+- `PATCH /api/shop/orders/:id/status`
+
+### Other Modules
+
+- `GET /api/packages`
+- `GET /api/reports`
+- `GET /api/bookings`
+- `POST /api/bookings`
+- `GET /api/users`
+
+## Notes
+
+- Public storefront users do not see raw stock counts.
+- Checkout requires both `eventDate` and `eventTime`.
+- The availability API marks already-booked time slots as unavailable.
+- `account.html` shows loyalty information and the signed-in user's orders.
+- `dashboard.html` supports order status updates.
+
+## Data Scripts
+
+- `seed.js`
+  Seeds base categories, products, packages, and settings.
+- `scripts/upsertEventAddons.js`
+  Creates or updates event add-on products.
+
+## Health Check
+
+```text
+GET /api/health
+```
+
+Example response:
+
+```json
+{
+  "ok": true,
+  "mongo": "connected"
+}
+```
+
+## Current Event Add-ons
+
+- Coffee add-ons
+- Cake add-ons
+- Shake and smoothie add-ons
+- Live band add-ons
+- Projector add-on
+
+## License
+
+Private project for Grace Coffee Shop.

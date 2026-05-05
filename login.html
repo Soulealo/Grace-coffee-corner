@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grace Coffee Shop | Нэвтрэх</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream: #F5EFE0;
+      --espresso: #2C1A0E;
+      --caramel: #C08B45;
+      --latte: #D4B483;
+      --foam: #FAF6EE;
+      --dark-roast: #1A0F07;
+      --line: rgba(44, 26, 14, .14);
+      --muted: #74665C;
+      --danger: #A44335;
+      --success: #2F7D4E;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background:
+        linear-gradient(120deg, rgba(26,15,7,.76), rgba(44,26,14,.36)),
+        url("https://images.unsplash.com/photo-1513267048331-5611cad62e41?auto=format&fit=crop&w=1600&q=82") center/cover;
+      color: var(--espresso);
+      font-family: "DM Sans", sans-serif;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+    .card {
+      width: min(440px, 100%);
+      border: 1px solid rgba(255,255,255,.36);
+      border-radius: 22px;
+      background: rgba(250,246,238,.94);
+      box-shadow: 0 24px 72px rgba(26,15,7,.28);
+      backdrop-filter: blur(18px);
+      padding: 28px;
+      animation: fadeUp .45s ease both;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 22px;
+      text-align: left;
+    }
+    .brand img {
+      width: 76px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+    .brand strong {
+      display: block;
+      font-family: "Playfair Display", serif;
+      font-size: 1.65rem;
+      line-height: 1;
+    }
+    .brand span {
+      color: var(--muted);
+      font-size: .78rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    h1 {
+      font-family: "Playfair Display", serif;
+      font-size: 2.4rem;
+      line-height: 1;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .sub {
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+    .tab {
+      min-height: 44px;
+      border: 0;
+      border-bottom: 3px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .tab.active {
+      color: var(--espresso);
+      border-color: var(--caramel);
+    }
+    form { display: none; gap: 13px; }
+    form.active { display: grid; }
+    label {
+      display: grid;
+      gap: 7px;
+      color: var(--muted);
+      font-size: .82rem;
+      font-weight: 700;
+    }
+    input {
+      min-height: 46px;
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--espresso);
+      padding: 10px 12px;
+      outline: none;
+    }
+    input:focus {
+      border-color: var(--caramel);
+      box-shadow: 0 0 0 3px rgba(192,139,69,.14);
+    }
+    .btn {
+      min-height: 48px;
+      border: 1px solid var(--espresso);
+      border-radius: 999px;
+      background: var(--espresso);
+      color: var(--foam);
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn:disabled { opacity: .55; cursor: not-allowed; }
+    .link-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+    .link-row button, .link-row a {
+      border: 0;
+      background: transparent;
+      color: var(--espresso);
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .alert {
+      display: none;
+      border-radius: 13px;
+      padding: 12px;
+      line-height: 1.5;
+      margin-bottom: 14px;
+      background: rgba(164,67,53,.12);
+      color: var(--danger);
+    }
+    .alert.show { display: block; }
+    .alert.ok {
+      background: rgba(47,125,78,.12);
+      color: var(--success);
+    }
+    .home-link {
+      display: inline-flex;
+      justify-content: center;
+      width: 100%;
+      margin-top: 16px;
+      color: rgba(250,246,238,.86);
+      font-weight: 700;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 600px) {
+      body { padding: 14px; }
+      .card { padding: 22px; border-radius: 18px; }
+      h1 { font-size: 2rem; }
+      .brand img { width: 64px; height: 52px; }
+    }
+  </style>
+</head>
+<body>
+  <main style="width:min(440px,100%);">
+    <section class="card">
+      <a class="brand" href="/">
+        <img src="/assets/logo.png" alt="Grace Coffee Shop logo">
+        <span>
+          <strong>Grace Coffee</strong>
+          <span>Event system</span>
+        </span>
+      </a>
+      <h1>Тавтай морил</h1>
+      <p class="sub">Admin, manager эсвэл хэрэглэгчийн бүртгэлээр нэвтэрнэ.</p>
+      <div id="alert" class="alert"></div>
+      <div class="tabs">
+        <button class="tab active" type="button" data-tab="login">Нэвтрэх</button>
+        <button class="tab" type="button" data-tab="register">Бүртгүүлэх</button>
+      </div>
+      <form id="loginForm" class="active">
+        <label>И-мэйл
+          <input name="email" type="email" required placeholder="admin@gracecoffee.mn">
+        </label>
+        <label>Нууц үг
+          <input name="password" type="password" required placeholder="Нууц үг">
+        </label>
+        <button class="btn" type="submit">Нэвтрэх</button>
+        <div class="link-row">
+          <span>Бүртгэл байхгүй юу?</span>
+          <button type="button" data-switch="register">Бүртгүүлэх</button>
+        </div>
+      </form>
+      <form id="registerForm">
+        <label>Нэр, овог
+          <input name="name" required placeholder="Таны нэр">
+        </label>
+        <label>И-мэйл
+          <input name="email" type="email" required placeholder="name@example.com">
+        </label>
+        <label>Утас
+          <input name="phone" placeholder="99112233">
+        </label>
+        <label>Нууц үг
+          <input name="password" type="password" minlength="6" required placeholder="6+ тэмдэгт">
+        </label>
+        <button class="btn" type="submit">Бүртгэл үүсгэх</button>
+        <div class="link-row">
+          <span>Бүртгэлтэй юу?</span>
+          <button type="button" data-switch="login">Нэвтрэх</button>
+        </div>
+      </form>
+    </section>
+    <a class="home-link" href="/">Нүүр хуудас руу буцах</a>
+  </main>
+
+  <script>
+    const alertBox = document.getElementById("alert");
+    const tabs = document.querySelectorAll("[data-tab]");
+    const forms = {
+      login: document.getElementById("loginForm"),
+      register: document.getElementById("registerForm")
+    };
+
+    function showTab(name) {
+      tabs.forEach((tab) => tab.classList.toggle("active", tab.dataset.tab === name));
+      Object.entries(forms).forEach(([key, form]) => form.classList.toggle("active", key === name));
+      showAlert("");
+    }
+
+    function showAlert(message, ok = false) {
+      alertBox.textContent = message;
+      alertBox.className = message ? `alert show ${ok ? "ok" : ""}` : "alert";
+    }
+
+    function redirectUser(user) {
+      if (user.role === "admin" || user.role === "manager") {
+        window.location.href = "/dashboard.html";
+      } else {
+        window.location.href = "/account.html";
+      }
+    }
+
+    async function submitAuth(path, form, button) {
+      button.disabled = true;
+      const oldText = button.textContent;
+      button.textContent = "Түр хүлээнэ үү...";
+      showAlert("");
+      try {
+        const payload = Object.fromEntries(new FormData(form).entries());
+        const response = await fetch(path, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Алдаа гарлаа");
+        localStorage.setItem("cb_token", data.token);
+        localStorage.setItem("cb_user", JSON.stringify(data.user));
+        redirectUser(data.user);
+      } catch (err) {
+        showAlert(err.message);
+      } finally {
+        button.disabled = false;
+        button.textContent = oldText;
+      }
+    }
+
+    tabs.forEach((tab) => tab.addEventListener("click", () => showTab(tab.dataset.tab)));
+    document.querySelectorAll("[data-switch]").forEach((button) => {
+      button.addEventListener("click", () => showTab(button.dataset.switch));
+    });
+    forms.login.addEventListener("submit", (event) => {
+      event.preventDefault();
+      submitAuth("/api/auth/login", forms.login, forms.login.querySelector("button[type='submit']"));
+    });
+    forms.register.addEventListener("submit", (event) => {
+      event.preventDefault();
+      submitAuth("/api/auth/register", forms.register, forms.register.querySelector("button[type='submit']"));
+    });
+  </script>
+</body>
+</html>

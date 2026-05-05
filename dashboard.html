@@ -355,7 +355,6 @@
           <h1>Event удирдлага</h1>
           <p class="muted">Grace Coffee-ийн event багц, нэмэлт бүтээгдэхүүн, захиалга, төлбөрийн мэдээллийг эндээс удирдана.</p>
         </div>
-        <button class="btn primary" type="button" id="refreshBtn">Шинэчлэх</button>
       </div>
 
       <div id="alert" class="alert"></div>
@@ -472,7 +471,7 @@
               <option value="manager">Manager</option>
               <option value="admin">Admin</option>
             </select>
-            <button class="btn primary" type="submit" id="saveUserBtn">Нэмэх</button>
+            <button class="btn primary" type="submit" id="saveUserBtn" style="grid-column: 1 / -1;">Нэмэх</button>
           </form>
         </div>
         <div class="panel">
@@ -990,7 +989,6 @@
     document.getElementById("addVariantBtn").addEventListener("click", () => addVariantRow());
     document.getElementById("resetProductBtn").addEventListener("click", resetProductForm);
     document.getElementById("resetCategoryBtn").addEventListener("click", resetCategoryForm);
-    document.getElementById("refreshBtn").addEventListener("click", () => loadData().then(() => showAlert("Мэдээлэл шинэчлэгдлээ.")));
     document.getElementById("logoutBtn").addEventListener("click", () => {
       localStorage.removeItem("cb_token");
       localStorage.removeItem("cb_user");

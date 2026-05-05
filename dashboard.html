@@ -340,7 +340,7 @@
       <nav class="menu" aria-label="Admin цэс">
         <button class="active" type="button" data-tab="products">Бүтээгдэхүүн</button>
         <button type="button" data-tab="categories" data-admin-only>Ангилал</button>
-        <button type="button" data-tab="orders" data-admin-only>Захиалга</button>
+        <button type="button" data-tab="orders">Захиалга</button>
         <button type="button" data-tab="users" data-admin-only>Хэрэглэгчид</button>
         <button type="button" data-tab="settings" data-admin-only>Тохиргоо</button>
         <a class="side-link" href="/">Нүүр хуудас</a>
@@ -362,13 +362,13 @@
       <div class="stats">
         <div class="stat"><span>Бүтээгдэхүүн</span><strong id="statProducts">0</strong></div>
         <div class="stat" data-admin-only><span>Ангилал</span><strong id="statCategories">0</strong></div>
-        <div class="stat" data-admin-only><span>Захиалга</span><strong id="statOrders">0</strong></div>
+        <div class="stat"><span>Захиалга</span><strong id="statOrders">0</strong></div>
         <div class="stat" data-admin-only><span>Хэрэглэгчид</span><strong id="statUsers">0</strong></div>
         <div class="stat" data-admin-only><span>Нийт дүн</span><strong id="statRevenue">0₮</strong></div>
       </div>
 
       <section id="products" class="section active">
-        <div class="panel">
+        <div class="panel" data-admin-only>
           <div class="toolbar">
             <h2>Event бүтээгдэхүүн нэмэх / засах</h2>
             <button class="btn" type="button" id="resetProductBtn">Шинэ form</button>
@@ -439,7 +439,7 @@
         </div>
       </section>
 
-      <section id="orders" class="section" data-admin-only>
+      <section id="orders" class="section">
         <div class="panel">
           <div class="toolbar">
             <h2>Event захиалгууд</h2>
@@ -691,10 +691,12 @@
             <td>${product.category}</td>
             <td>${formatPrice(variant.price)}<br><span class="muted">Нийт нөөц: ${totalStock}</span></td>
             <td>
+              ${isAdmin() ? `
               <div class="actions">
                 <button class="btn" type="button" data-edit="${product._id}">Засах</button>
                 <button class="btn danger" type="button" data-delete="${product._id}">Идэвхгүй болгох</button>
               </div>
+              ` : ''}
             </td>
           </tr>
         `;
@@ -846,12 +848,12 @@
       state.products = products.products || [];
       state.orders = [];
       state.users = [];
-      if (isAdmin()) {
-        const [ordersData, usersData] = await Promise.all([
-          api("/api/shop/orders"),
-          api("/api/users")
-        ]);
+      if (isAdmin() || isManager()) {
+        const ordersData = await api("/api/shop/orders");
         state.orders = ordersData.orders || [];
+      }
+      if (isAdmin()) {
+        const usersData = await api("/api/users");
         state.users = usersData.users || [];
       }
       localStorage.setItem("cb_user", JSON.stringify(state.user));
@@ -860,8 +862,10 @@
       applyRoleAccess();
       renderCategories();
       renderProducts();
-      if (isAdmin()) {
+      if (isAdmin() || isManager()) {
         renderOrders();
+      }
+      if (isAdmin()) {
         renderUsers();
       }
       renderSettings();

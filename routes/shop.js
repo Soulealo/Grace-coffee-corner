@@ -7,7 +7,7 @@ const auth = require('../middleware/auth');
 const requireRole = require('../middleware/role');
 
 const router = express.Router();
-const productManagers = [auth, requireRole('admin', 'manager')];
+const staffAccess = [auth, requireRole('admin', 'manager')];
 const adminOnly = [auth, requireRole('admin')];
 
 function optionalAuth(req, res, next) {
@@ -483,7 +483,7 @@ router.get('/products/:id', async (req, res, next) => {
   }
 });
 
-router.post('/products', ...productManagers, async (req, res, next) => {
+router.post('/products', ...adminOnly, async (req, res, next) => {
   try {
     const body = await buildProductBody(req.body);
     const product = await Product.create(body);
@@ -494,7 +494,7 @@ router.post('/products', ...productManagers, async (req, res, next) => {
   }
 });
 
-router.patch('/products/:id', ...productManagers, async (req, res, next) => {
+router.patch('/products/:id', ...adminOnly, async (req, res, next) => {
   try {
     const body = await buildProductBody(req.body);
     const product = await Product.findByIdAndUpdate(req.params.id, body, {
@@ -514,7 +514,7 @@ router.patch('/products/:id', ...productManagers, async (req, res, next) => {
   }
 });
 
-router.delete('/products/:id', ...productManagers, async (req, res, next) => {
+router.delete('/products/:id', ...adminOnly, async (req, res, next) => {
   try {
     const product = await Product.findByIdAndUpdate(
       req.params.id,
@@ -534,7 +534,7 @@ router.delete('/products/:id', ...productManagers, async (req, res, next) => {
   }
 });
 
-router.get('/orders', ...adminOnly, async (req, res, next) => {
+router.get('/orders', ...staffAccess, async (req, res, next) => {
   try {
     const orders = await Order.find({}).sort({ createdAt: -1 }).lean();
     res.json({ orders });
@@ -649,7 +649,7 @@ router.post('/orders', optionalAuth, async (req, res, next) => {
   }
 });
 
-router.patch('/orders/:id/status', ...adminOnly, async (req, res, next) => {
+router.patch('/orders/:id/status', ...staffAccess, async (req, res, next) => {
   try {
     const order = await Order.findByIdAndUpdate(
       req.params.id,

@@ -341,6 +341,7 @@
         <button class="active" type="button" data-tab="products">Бүтээгдэхүүн</button>
         <button type="button" data-tab="categories" data-admin-only>Ангилал</button>
         <button type="button" data-tab="orders" data-admin-only>Захиалга</button>
+        <button type="button" data-tab="users" data-admin-only>Хэрэглэгчид</button>
         <button type="button" data-tab="settings" data-admin-only>Тохиргоо</button>
         <a class="side-link" href="/">Нүүр хуудас</a>
         <button type="button" id="logoutBtn">Гарах</button>
@@ -363,6 +364,7 @@
         <div class="stat"><span>Бүтээгдэхүүн</span><strong id="statProducts">0</strong></div>
         <div class="stat" data-admin-only><span>Ангилал</span><strong id="statCategories">0</strong></div>
         <div class="stat" data-admin-only><span>Захиалга</span><strong id="statOrders">0</strong></div>
+        <div class="stat" data-admin-only><span>Хэрэглэгчид</span><strong id="statUsers">0</strong></div>
         <div class="stat" data-admin-only><span>Нийт дүн</span><strong id="statRevenue">0₮</strong></div>
       </div>
 
@@ -459,6 +461,35 @@
         </div>
       </section>
 
+      <section id="users" class="section" data-admin-only>
+        <div class="panel">
+          <h2>Хэрэглэгч нэмэх</h2>
+          <form id="userForm" class="grid" style="margin-top:14px;">
+            <input name="name" required placeholder="Нэр">
+            <input name="email" type="email" required placeholder="И-мэйл">
+            <input name="password" type="password" required placeholder="Нууц үг">
+            <select name="role" required>
+              <option value="manager">Manager</option>
+              <option value="admin">Admin</option>
+            </select>
+            <button class="btn primary" type="submit" id="saveUserBtn">Нэмэх</button>
+          </form>
+        </div>
+        <div class="panel">
+          <h2>Хэрэглэгчдийн жагсаалт</h2>
+          <table style="margin-top:12px;">
+            <thead>
+              <tr>
+                <th>Нэр / И-мэйл</th>
+                <th>Эрх</th>
+                <th>Үйлдэл</th>
+              </tr>
+            </thead>
+            <tbody id="userRows"></tbody>
+          </table>
+        </div>
+      </section>
+
       <section id="settings" class="section" data-admin-only>
         <div class="panel">
           <h2>Сайтын болон төлбөрийн тохиргоо</h2>
@@ -500,6 +531,7 @@
       products: [],
       categories: [],
       orders: [],
+      users: [],
       settings: null
     };
 
@@ -814,9 +846,14 @@
       state.categories = categories.categories || [];
       state.products = products.products || [];
       state.orders = [];
+      state.users = [];
       if (isAdmin()) {
-        const orders = await api("/api/shop/orders");
-        state.orders = orders.orders || [];
+        const [ordersData, usersData] = await Promise.all([
+          api("/api/shop/orders"),
+          api("/api/users")
+        ]);
+        state.orders = ordersData.orders || [];
+        state.users = usersData.users || [];
       }
       localStorage.setItem("cb_user", JSON.stringify(state.user));
       const roleLabel = state.user.role === "admin" ? "Admin" : state.user.role === "manager" ? "Manager" : state.user.role;
@@ -824,7 +861,10 @@
       applyRoleAccess();
       renderCategories();
       renderProducts();
-      if (isAdmin()) renderOrders();
+      if (isAdmin()) {
+        renderOrders();
+        renderUsers();
+      }
       renderSettings();
     }
 
@@ -885,6 +925,54 @@
       showAlert("Тохиргоо хадгалагдлаа.");
       await loadData();
     });
+
+    function renderUsers() {
+      const statUsers = document.getElementById("statUsers");
+      if (statUsers) statUsers.textContent = state.users.length;
+      const userRows = document.getElementById("userRows");
+      if (!userRows) return;
+      userRows.innerHTML = state.users.length
+        ? state.users.map((u) => `
+          <tr>
+            <td><strong>${u.name}</strong><br><span class="muted">${u.email}</span></td>
+            <td>${u.role === "admin" ? "Admin" : "Manager"}</td>
+            <td style="text-align:right;">
+              <div class="actions" style="justify-content:flex-end;">
+                ${u._id === state.user._id ? `<span class="muted">Өөрөө</span>` : `
+                  <button class="btn danger" type="button" data-delete-user="${u._id}">Устгах</button>
+                `}
+              </div>
+            </td>
+          </tr>
+        `).join("")
+        : `<tr><td colspan="3"><div class="empty">Хэрэглэгч алга байна.</div></td></tr>`;
+      userRows.querySelectorAll("[data-delete-user]").forEach((button) => {
+        button.addEventListener("click", () => deleteUser(button.dataset.deleteUser));
+      });
+    }
+
+    async function deleteUser(userId) {
+      if (!confirm("Энэ хэрэглэгчийг устгах уу?")) return;
+      await api(`/api/users/${userId}`, { method: "DELETE" });
+      showAlert("Хэрэглэгч устгагдлаа.");
+      await loadData();
+    }
+
+    const userForm = document.getElementById("userForm");
+    if (userForm) {
+      userForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!isAdmin()) return;
+        const form = new FormData(userForm);
+        await api("/api/users", {
+          method: "POST",
+          body: JSON.stringify(Object.fromEntries(form.entries()))
+        });
+        userForm.reset();
+        showAlert("Хэрэглэгч нэмэгдлээ.");
+        await loadData();
+      });
+    }
 
     document.querySelectorAll("[data-tab]").forEach((button) => {
       button.addEventListener("click", () => {

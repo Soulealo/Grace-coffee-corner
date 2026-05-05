@@ -10,7 +10,7 @@ router.use(auth, requireRole('admin'));
 
 router.get('/', async (req, res, next) => {
   try {
-    const users = await User.find({ role: 'manager' })
+    const users = await User.find({ role: { $in: ['admin', 'manager'] } })
       .select('-password')
       .sort({ createdAt: -1 })
       .lean();
@@ -25,6 +25,11 @@ router.post('/', async (req, res, next) => {
     const name = String(req.body.name || '').trim();
     const email = String(req.body.email || '').trim().toLowerCase();
     const password = String(req.body.password || '');
+    let role = String(req.body.role || '').toLowerCase();
+    
+    if (role !== 'admin' && role !== 'manager') {
+      role = 'manager';
+    }
 
     if (!name || !email || !password) {
       const err = new Error('Name, email and password are required');
@@ -41,7 +46,7 @@ router.post('/', async (req, res, next) => {
       name,
       email,
       password: await bcrypt.hash(password, 12),
-      role: 'manager'
+      role
     });
 
     res.status(201).json({
@@ -61,7 +66,7 @@ router.post('/', async (req, res, next) => {
 router.delete('/:id', async (req, res, next) => {
   try {
     const user = await User.findOneAndUpdate(
-      { _id: req.params.id, role: 'manager' },
+      { _id: req.params.id, role: { $in: ['admin', 'manager'] } },
       { isActive: false },
       { new: true }
     )
@@ -69,12 +74,12 @@ router.delete('/:id', async (req, res, next) => {
       .lean();
 
     if (!user) {
-      const err = new Error('Manager not found');
+      const err = new Error('User not found');
       err.status = 404;
       throw err;
     }
 
-    res.json({ message: 'Manager deactivated', user });
+    res.json({ message: 'User deactivated', user });
   } catch (err) {
     next(err);
   }

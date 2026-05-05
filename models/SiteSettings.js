@@ -21,7 +21,7 @@ const siteSettingsSchema = new mongoose.Schema(
     },
     facebookUrl: {
       type: String,
-      default: 'https://facebook.com/'
+      default: 'https://www.facebook.com/gracedarkhan'
     },
     primaryColor: {
       type: String,

@@ -25,7 +25,7 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-router.patch('/', auth, requireRole('director'), async (req, res, next) => {
+router.patch('/', auth, requireRole('admin'), async (req, res, next) => {
   try {
     const prices = req.body.prices || req.body;
     const codes = ['basic', 'standard', 'premium'];

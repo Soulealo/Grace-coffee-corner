@@ -258,7 +258,7 @@
     }
 
     function redirectUser(user) {
-      if (user.role === "director" || user.role === "manager") {
+      if (user.role === "admin" || user.role === "manager") {
         window.location.href = "/dashboard.html";
       } else {
         window.location.href = "/account.html";

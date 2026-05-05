@@ -4,22 +4,20 @@ const variantSchema = new mongoose.Schema(
   {
     colorName: {
       type: String,
-      required: [true, 'Сонголтын нэр оруулна уу'],
-      trim: true
+      trim: true,
+      default: 'Default'
     },
     colorHex: {
       type: String,
-      default: '#C08B45',
-      trim: true
+      trim: true,
+      default: '#C08B45'
     },
     image: {
       type: String,
-      required: [true, 'Зургийн холбоос оруулна уу'],
       trim: true
     },
     price: {
       type: Number,
-      required: true,
       min: 0
     },
     stock: {
@@ -45,32 +43,43 @@ const productSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, 'Бүтээгдэхүүний нэр оруулна уу'],
+      required: [true, 'Product name is required'],
       trim: true
     },
-    category: {
-      type: String,
-      required: [true, 'Ангилал сонгоно уу'],
-      trim: true
+    price: {
+      type: Number,
+      required: [true, 'Product price is required'],
+      min: 0
     },
     description: {
       type: String,
-      trim: true,
-      default: ''
+      required: [true, 'Product description is required'],
+      trim: true
+    },
+    categoryId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Category',
+      required: [true, 'Category is required'],
+      index: true
+    },
+    image: {
+      type: String,
+      required: [true, 'Product image is required'],
+      trim: true
+    },
+    stock: {
+      type: Number,
+      default: 0,
+      min: 0
     },
     deliveryInfo: {
       type: String,
       trim: true,
-      default: 'Event-ийн өдөр, цагийг менежер холбогдож баталгаажуулна.'
+      default: 'Manager will confirm event date and delivery details.'
     },
     variants: {
       type: [variantSchema],
-      validate: {
-        validator(value) {
-          return value.length > 0;
-        },
-        message: 'Дор хаяж нэг сонголт оруулна уу'
-      }
+      default: []
     },
     isFeatured: {
       type: Boolean,

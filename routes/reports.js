@@ -6,7 +6,7 @@ const requireRole = require('../middleware/role');
 
 const router = express.Router();
 
-router.use(auth, requireRole('director'));
+router.use(auth, requireRole('admin'));
 
 router.get('/monthly', async (req, res, next) => {
   try {

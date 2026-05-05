@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="mn">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Grace Coffee Shop â€” Ð—Ð°Ñ…Ð¸Ð°Ð»Ð³Ð° ÑˆÐ°Ð»Ð³Ð°Ñ…</title>
+<title>Grace Coffee Shop — Захиалга шалгах</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root { --cream:#F5EFE0; --espresso:#2C1A0E; --caramel:#C08B45; --latte:#D4B483; --foam:#FAF6EE; --dark-roast:#1A0F07; --line:rgba(192,139,69,0.25); }
@@ -31,18 +31,18 @@
 <body>
   <main class="panel">
     <a class="logo" href="/">Grace Coffee Shop</a>
-    <h1>Ð—Ð°Ñ…Ð¸Ð°Ð»Ð³Ð° ÑˆÐ°Ð»Ð³Ð°Ñ…</h1>
-    <p>Ð—Ð°Ñ…Ð¸Ð°Ð»Ð³Ð° Ð¸Ð»Ð³ÑÑÑ… Ò¯ÐµÐ´ Ð°Ð²ÑÐ°Ð½ Ð´ÑƒÐ³Ð°Ð°Ñ€Ð°Ð° Ð¾Ñ€ÑƒÑƒÐ»Ð°Ð°Ð´ Ñ‚Ó©Ð»Ó©Ð²Ó©Ó© ÑˆÐ°Ð»Ð³Ð°Ð½Ð° ÑƒÑƒ.</p>
+    <h1>Захиалга шалгах</h1>
+    <p>Захиалга илгээх үед авсан дугаараа оруулаад төлөвөө шалгана уу.</p>
     <form id="checkForm">
-      <label>Ð—Ð°Ñ…Ð¸Ð°Ð»Ð³Ñ‹Ð½ Ð´ÑƒÐ³Ð°Ð°Ñ€
+      <label>Захиалгын дугаар
         <input id="bookingRef" required placeholder="GC-EVENT-2026-12345">
       </label>
-      <button id="checkBtn" type="submit">Ð¨Ð°Ð»Ð³Ð°Ñ…</button>
+      <button id="checkBtn" type="submit">Шалгах</button>
     </form>
     <div id="result" class="result"></div>
     <div class="links">
-      <a class="link" href="/">Ð—Ð°Ñ…Ð¸Ð°Ð»Ð³Ð° Ó©Ð³Ó©Ñ…</a>
-      <a class="link" href="/login.html">Ð£Ð´Ð¸Ñ€Ð´Ð»Ð°Ð³Ð°</a>
+      <a class="link" href="/">Захиалга өгөх</a>
+      <a class="link" href="/login.html">Удирдлага</a>
     </div>
   </main>
 
@@ -50,7 +50,7 @@
   const form = document.getElementById('checkForm');
   const btn = document.getElementById('checkBtn');
   const result = document.getElementById('result');
-  const labels = { pending:'Ð¥Ò¯Ð»ÑÑÐ³Ð´ÑÐ¶ Ð±ÑƒÐ¹', confirmed:'Ð‘Ð°Ñ‚Ð»Ð°Ð³Ð´ÑÐ°Ð½', completed:'Ð”ÑƒÑƒÑÑÐ°Ð½', cancelled:'Ð¦ÑƒÑ†Ð»Ð°Ð³Ð´ÑÐ°Ð½' };
+  const labels = { pending:'Хүлээгдэж буй', confirmed:'Батлагдсан', completed:'Дууссан', cancelled:'Цуцлагдсан' };
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -59,26 +59,26 @@
 
     result.className = 'result';
     btn.disabled = true;
-    btn.textContent = 'Ð¨Ð°Ð»Ð³Ð°Ð¶ Ð±Ð°Ð¹Ð½Ð°...';
+    btn.textContent = 'Шалгаж байна...';
 
     fetch(`/api/bookings/${encodeURIComponent(ref)}/status`)
       .then(async res => {
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Ð—Ð°Ñ…Ð¸Ð°Ð»Ð³Ð° Ð¾Ð»Ð´ÑÐ¾Ð½Ð³Ò¯Ð¹');
+        if (!res.ok) throw new Error(data.error || 'Захиалга олдсонгүй');
         return data;
       })
       .then(({ booking }) => {
         const date = new Date(booking.eventDate).toLocaleDateString('mn-MN');
         result.className = 'result show';
-        result.innerHTML = `<strong>${booking.bookingRef}</strong><br>Ð¢Ó©Ð»Ó©Ð²: <strong>${labels[booking.status] || booking.status}</strong><br>ÐžÐ³Ð½Ð¾Ð¾: ${date} ${booking.eventTime}${booking.managerNote ? `<br>Ð¢ÑÐ¼Ð´ÑÐ³Ð»ÑÐ»: ${booking.managerNote}` : ''}`;
+        result.innerHTML = `<strong>${booking.bookingRef}</strong><br>Төлөв: <strong>${labels[booking.status] || booking.status}</strong><br>Огноо: ${date} ${booking.eventTime}${booking.managerNote ? `<br>Тэмдэглэл: ${booking.managerNote}` : ''}`;
       })
       .catch(err => {
         result.className = 'result show error';
-        result.textContent = err.message || 'Ð¡Ò¯Ð»Ð¶ÑÑÐ½Ð¸Ð¹ Ð°Ð»Ð´Ð°Ð° Ð³Ð°Ñ€Ð»Ð°Ð°';
+        result.textContent = err.message || 'Сүлжээний алдаа гарлаа';
       })
       .finally(() => {
         btn.disabled = false;
-        btn.textContent = 'Ð¨Ð°Ð»Ð³Ð°Ñ…';
+        btn.textContent = 'Шалгах';
       });
   });
 </script>

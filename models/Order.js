@@ -6,6 +6,9 @@ const orderItemSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Product'
     },
+    variant: {
+      type: mongoose.Schema.Types.ObjectId
+    },
     name: String,
     colorName: String,
     quantity: {
@@ -25,6 +28,11 @@ const orderItemSchema = new mongoose.Schema(
 
 const orderSchema = new mongoose.Schema(
   {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      index: true
+    },
     orderRef: {
       type: String,
       unique: true,
@@ -44,6 +52,16 @@ const orderSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true
+    },
+    eventDate: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    eventTime: {
+      type: String,
+      trim: true,
+      default: ''
     },
     paymentMethod: {
       type: String,

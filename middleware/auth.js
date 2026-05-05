@@ -7,31 +7,32 @@ async function auth(req, res, next) {
     const token = header.startsWith('Bearer ') ? header.slice(7) : '';
 
     if (!token) {
-      const err = new Error('Нэвтрэх шаардлагатай');
+      const err = new Error('Authentication required');
       err.status = 401;
       throw err;
     }
 
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findOne({ _id: payload.id, isActive: true })
+    const user = await User.findOne({ _id: payload.id, isActive: { $ne: false } })
       .select('-password')
       .lean();
 
     if (!user) {
-      const err = new Error('Хэрэглэгч олдсонгүй эсвэл идэвхгүй байна');
+      const err = new Error('User not found or inactive');
       err.status = 401;
       throw err;
     }
 
     req.user = user;
+    req.tokenRole = payload.role;
     next();
   } catch (err) {
     if (err.name === 'TokenExpiredError') {
-      err.message = 'Нэвтрэх хугацаа дууссан';
+      err.message = 'Login session expired';
       err.status = 401;
     }
     if (err.name === 'JsonWebTokenError') {
-      err.message = 'Token буруу байна';
+      err.message = 'Invalid token';
       err.status = 401;
     }
     next(err);

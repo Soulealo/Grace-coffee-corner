@@ -339,9 +339,9 @@
       </a>
       <nav class="menu" aria-label="Admin цэс">
         <button class="active" type="button" data-tab="products">Бүтээгдэхүүн</button>
-        <button type="button" data-tab="categories">Ангилал</button>
-        <button type="button" data-tab="orders">Захиалга</button>
-        <button type="button" data-tab="settings">Тохиргоо</button>
+        <button type="button" data-tab="categories" data-admin-only>Ангилал</button>
+        <button type="button" data-tab="orders" data-admin-only>Захиалга</button>
+        <button type="button" data-tab="settings" data-admin-only>Тохиргоо</button>
         <a class="side-link" href="/">Нүүр хуудас</a>
         <button type="button" id="logoutBtn">Гарах</button>
       </nav>
@@ -361,9 +361,9 @@
 
       <div class="stats">
         <div class="stat"><span>Бүтээгдэхүүн</span><strong id="statProducts">0</strong></div>
-        <div class="stat"><span>Ангилал</span><strong id="statCategories">0</strong></div>
-        <div class="stat"><span>Захиалга</span><strong id="statOrders">0</strong></div>
-        <div class="stat"><span>Нийт дүн</span><strong id="statRevenue">0₮</strong></div>
+        <div class="stat" data-admin-only><span>Ангилал</span><strong id="statCategories">0</strong></div>
+        <div class="stat" data-admin-only><span>Захиалга</span><strong id="statOrders">0</strong></div>
+        <div class="stat" data-admin-only><span>Нийт дүн</span><strong id="statRevenue">0₮</strong></div>
       </div>
 
       <section id="products" class="section active">
@@ -420,12 +420,14 @@
         </div>
       </section>
 
-      <section id="categories" class="section">
+      <section id="categories" class="section" data-admin-only>
         <div class="panel">
           <h2>Ангилал нэмэх</h2>
           <form id="categoryForm" class="grid" style="margin-top:14px;">
+            <input type="hidden" name="id">
             <input name="name" required placeholder="Жишээ: Event багц">
-            <button class="btn primary" type="submit">Нэмэх</button>
+            <button class="btn primary" type="submit" id="saveCategoryBtn">Нэмэх</button>
+            <button class="btn" type="button" id="resetCategoryBtn">Шинэ ангилал</button>
           </form>
         </div>
         <div class="panel">
@@ -436,7 +438,7 @@
         </div>
       </section>
 
-      <section id="orders" class="section">
+      <section id="orders" class="section" data-admin-only>
         <div class="panel">
           <div class="toolbar">
             <h2>Event захиалгууд</h2>
@@ -457,7 +459,7 @@
         </div>
       </section>
 
-      <section id="settings" class="section">
+      <section id="settings" class="section" data-admin-only>
         <div class="panel">
           <h2>Сайтын болон төлбөрийн тохиргоо</h2>
           <form id="settingsForm" style="margin-top:14px;">
@@ -511,6 +513,27 @@
     const categoryRows = document.getElementById("categoryRows");
     const orderRows = document.getElementById("orderRows");
     const productCategory = document.getElementById("productCategory");
+
+    function isAdmin() {
+      return state.user && state.user.role === "admin";
+    }
+
+    function isManager() {
+      return state.user && state.user.role === "manager";
+    }
+
+    function applyRoleAccess() {
+      document.querySelectorAll("[data-admin-only]").forEach((element) => {
+        element.style.display = isAdmin() ? "" : "none";
+      });
+
+      if (isManager()) {
+        document.querySelectorAll("[data-tab]").forEach((item) => item.classList.remove("active"));
+        document.querySelectorAll(".section").forEach((section) => section.classList.remove("active"));
+        document.querySelector('[data-tab="products"]').classList.add("active");
+        document.getElementById("products").classList.add("active");
+      }
+    }
 
     function formatPrice(value) {
       return `${money.format(Number(value || 0))}₮`;
@@ -660,11 +683,19 @@
       categoryRows.innerHTML = state.categories.length
         ? state.categories.map((category) => `
           <tr>
-            <td><strong>${category.name}</strong><br><span class="muted">${category.slug}</span></td>
-            <td style="text-align:right;"><button class="btn danger" type="button" data-delete-category="${category._id}">Устгах</button></td>
+            <td><strong>${category.name}</strong><br><span class="muted">${category._id}</span></td>
+            <td style="text-align:right;">
+              <div class="actions" style="justify-content:flex-end;">
+                <button class="btn" type="button" data-edit-category="${category._id}">Засах</button>
+                <button class="btn danger" type="button" data-delete-category="${category._id}">Устгах</button>
+              </div>
+            </td>
           </tr>
         `).join("")
         : `<tr><td><div class="empty">Ангилал алга байна.</div></td></tr>`;
+      categoryRows.querySelectorAll("[data-edit-category]").forEach((button) => {
+        button.addEventListener("click", () => editCategory(button.dataset.editCategory));
+      });
       categoryRows.querySelectorAll("[data-delete-category]").forEach((button) => {
         button.addEventListener("click", () => deleteCategory(button.dataset.deleteCategory));
       });
@@ -693,7 +724,7 @@
       orderRows.innerHTML = state.orders.map((order) => `
         <tr>
           <td><strong>${order.orderRef}</strong><br><span class="muted">${new Date(order.createdAt).toLocaleString("mn-MN")}</span></td>
-          <td>${order.customerName}<br><span class="muted">${order.phone}<br>${order.address || ""}</span></td>
+          <td>${order.customerName}<br><span class="muted">${order.phone}<br>${order.eventDate || "Өдөр сонгоогүй"} ${order.eventTime || ""}<br>${order.address || ""}</span></td>
           <td>${(order.items || []).map((item) => `${item.name} (${item.colorName || "сонголт"}) x ${item.quantity}`).join("<br>")}</td>
           <td><strong>${formatPrice(order.total)}</strong><br><span class="muted">${order.paymentMethod}</span></td>
           <td>
@@ -740,6 +771,21 @@
       await loadData();
     }
 
+    function resetCategoryForm() {
+      categoryForm.reset();
+      categoryForm.elements.id.value = "";
+      document.getElementById("saveCategoryBtn").textContent = "Нэмэх";
+    }
+
+    function editCategory(categoryId) {
+      const category = state.categories.find((item) => item._id === categoryId);
+      if (!category) return;
+      categoryForm.elements.id.value = category._id;
+      categoryForm.elements.name.value = category.name;
+      document.getElementById("saveCategoryBtn").textContent = "Шинэчлэх";
+      document.getElementById("categories").scrollIntoView({ behavior: "smooth" });
+    }
+
     async function deleteCategory(categoryId) {
       if (!confirm("Энэ ангиллыг устгах уу?")) return;
       await api(`/api/shop/categories/${categoryId}`, { method: "DELETE" });
@@ -757,23 +803,28 @@
     }
 
     async function loadData() {
-      const [me, settings, categories, products, orders] = await Promise.all([
+      const [me, settings, categories, products] = await Promise.all([
         api("/api/auth/me"),
         api("/api/shop/settings"),
         api("/api/shop/categories"),
-        api("/api/shop/products"),
-        api("/api/shop/orders")
+        api("/api/shop/products")
       ]);
       state.user = me.user;
       state.settings = settings.settings;
       state.categories = categories.categories || [];
       state.products = products.products || [];
-      state.orders = orders.orders || [];
+      state.orders = [];
+      if (isAdmin()) {
+        const orders = await api("/api/shop/orders");
+        state.orders = orders.orders || [];
+      }
       localStorage.setItem("cb_user", JSON.stringify(state.user));
-      document.getElementById("userLine").textContent = `${state.user.name} · ${state.user.role}`;
+      const roleLabel = state.user.role === "admin" ? "Admin" : state.user.role === "manager" ? "Manager" : state.user.role;
+      document.getElementById("userLine").textContent = `${state.user.name} · ${roleLabel}`;
+      applyRoleAccess();
       renderCategories();
       renderProducts();
-      renderOrders();
+      if (isAdmin()) renderOrders();
       renderSettings();
     }
 
@@ -805,18 +856,27 @@
 
     categoryForm.addEventListener("submit", async (event) => {
       event.preventDefault();
+      if (!isAdmin()) {
+        showAlert("Ангилал удирдах эрх зөвхөн Admin-д байна.", "err");
+        return;
+      }
       const form = new FormData(categoryForm);
-      await api("/api/shop/categories", {
-        method: "POST",
+      const id = form.get("id");
+      await api(id ? `/api/shop/categories/${id}` : "/api/shop/categories", {
+        method: id ? "PATCH" : "POST",
         body: JSON.stringify({ name: form.get("name") })
       });
-      categoryForm.reset();
-      showAlert("Ангилал нэмэгдлээ.");
+      resetCategoryForm();
+      showAlert(id ? "Ангилал шинэчлэгдлээ." : "Ангилал нэмэгдлээ.");
       await loadData();
     });
 
     settingsForm.addEventListener("submit", async (event) => {
       event.preventDefault();
+      if (!isAdmin()) {
+        showAlert("Тохиргоо өөрчлөх эрх зөвхөн Admin-д байна.", "err");
+        return;
+      }
       const form = new FormData(settingsForm);
       await api("/api/shop/settings", {
         method: "PATCH",
@@ -828,6 +888,10 @@
 
     document.querySelectorAll("[data-tab]").forEach((button) => {
       button.addEventListener("click", () => {
+        if (button.hasAttribute("data-admin-only") && !isAdmin()) {
+          showAlert("Энэ хэсэг зөвхөн Admin эрхтэй хэрэглэгчид нээлттэй.", "err");
+          return;
+        }
         document.querySelectorAll("[data-tab]").forEach((item) => item.classList.remove("active"));
         document.querySelectorAll(".section").forEach((section) => section.classList.remove("active"));
         button.classList.add("active");
@@ -837,6 +901,7 @@
 
     document.getElementById("addVariantBtn").addEventListener("click", () => addVariantRow());
     document.getElementById("resetProductBtn").addEventListener("click", resetProductForm);
+    document.getElementById("resetCategoryBtn").addEventListener("click", resetCategoryForm);
     document.getElementById("refreshBtn").addEventListener("click", () => loadData().then(() => showAlert("Мэдээлэл шинэчлэгдлээ.")));
     document.getElementById("logoutBtn").addEventListener("click", () => {
       localStorage.removeItem("cb_token");

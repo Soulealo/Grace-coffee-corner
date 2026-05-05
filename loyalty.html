@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="mn">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Grace Coffee Shop â€” Loyalty</title>
+<title>Grace Coffee Shop — Loyalty</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root { --cream:#F5EFE0; --espresso:#2C1A0E; --caramel:#C08B45; --latte:#D4B483; --foam:#FAF6EE; --dark-roast:#1A0F07; }
@@ -38,27 +38,27 @@
   <header>
     <a class="brand" href="/"><img src="/assets/logo.png" alt="Grace Coffee Shop logo" style="width:72px;height:52px;object-fit:cover;border-radius:8px;"></a>
     <nav>
-      <a href="/landing.html">ÐÒ¯Ò¯Ñ€</a>
+      <a href="/landing.html">Нүүр</a>
       <a href="/">Event</a>
-      <a id="authLink" href="/login.html">ÐÑÐ²Ñ‚Ñ€ÑÑ…</a>
+      <a id="authLink" href="/login.html">Нэвтрэх</a>
     </nav>
   </header>
   <main>
-    <h1>Loyalty <em>ÐºÐ°Ñ€Ñ‚</em></h1>
-    <p class="lead">ÐšÐ¾Ñ„Ðµ Ð±Ð¾Ð»Ð¾Ð½ event Ð·Ð°Ñ…Ð¸Ð°Ð»Ð³Ñ‹Ð½Ñ…Ð°Ð° Ð¾Ð½Ð¾Ð¾Ð³ Ñ†ÑƒÐ³Ð»ÑƒÑƒÐ»Ð¶, Ð´Ð°Ñ€Ð°Ð°Ð³Ð¸Ð¹Ð½ ÑƒÑ€Ð°Ð¼ÑˆÑƒÑƒÐ»Ð°Ð», Ñ…Ó©Ð½Ð³Ó©Ð»Ó©Ð»Ñ‚Ð´Ó©Ó© Ð°ÑˆÐ¸Ð³Ð»Ð°Ð°Ñ€Ð°Ð¹.</p>
+    <h1>Loyalty <em>карт</em></h1>
+    <p class="lead">Кофе болон event захиалгынхаа оноог цуглуулж, дараагийн урамшуулал, хөнгөлөлтдөө ашиглаарай.</p>
     <div class="grid">
       <section class="card">
-        <p class="muted" id="userLine">ÐÑÐ²Ñ‚ÑÑ€Ñ‡ Ð¾Ð½Ð¾Ð¾Ð³Ð¾Ð¾ Ñ…Ð°Ñ€Ð½Ð° ÑƒÑƒ.</p>
+        <p class="muted" id="userLine">Нэвтэрч оноогоо харна уу.</p>
         <div class="points" id="points">0</div>
-        <p class="muted">Ñ†ÑƒÐ³Ð»Ð°Ñ€ÑÐ°Ð½ Ð¾Ð½Ð¾Ð¾</p>
+        <p class="muted">цугларсан оноо</p>
         <div class="actions">
-          <a class="btn primary" href="/login.html" id="loginBtn">ÐÑÐ²Ñ‚Ñ€ÑÑ…</a>
-          <button id="redeemBtn">100 Ð¾Ð½Ð¾Ð¾ Ð°ÑˆÐ¸Ð³Ð»Ð°Ñ…</button>
+          <a class="btn primary" href="/login.html" id="loginBtn">Нэвтрэх</a>
+          <button id="redeemBtn">100 оноо ашиглах</button>
         </div>
       </section>
       <section class="card">
-        <h2 style="font-family:'Playfair Display',serif; font-weight:400; margin-bottom:8px;">ÐžÐ½Ð¾Ð¾Ð½Ñ‹ Ñ‚Ò¯Ò¯Ñ…</h2>
-        <div class="log" id="logRows"><p class="muted">ÐžÐ´Ð¾Ð¾Ð³Ð¾Ð¾Ñ€ Ð¼ÑÐ´ÑÑÐ»ÑÐ» Ð°Ð»Ð³Ð°.</p></div>
+        <h2 style="font-family:'Playfair Display',serif; font-weight:400; margin-bottom:8px;">Онооны түүх</h2>
+        <div class="log" id="logRows"><p class="muted">Одоогоор мэдээлэл алга.</p></div>
       </section>
     </div>
   </main>
@@ -69,9 +69,9 @@
   const redeemBtn = document.getElementById('redeemBtn');
 
   if (token) {
-    authLink.textContent = 'ÐŸÑ€Ð¾Ñ„Ð°Ð¹Ð»';
+    authLink.textContent = 'Профайл';
     authLink.href = '/account.html';
-    loginBtn.textContent = 'ÐŸÑ€Ð¾Ñ„Ð°Ð¹Ð»';
+    loginBtn.textContent = 'Профайл';
     loginBtn.href = '/account.html';
   }
 
@@ -82,15 +82,15 @@
     fetch('/api/loyalty/me', { headers:headers() })
       .then(async res => {
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'ÐÐ»Ð´Ð°Ð° Ð³Ð°Ñ€Ð»Ð°Ð°');
+        if (!res.ok) throw new Error(data.error || 'Алдаа гарлаа');
         return data;
       })
       .then(data => {
-        document.getElementById('userLine').textContent = `${data.user.name} Â· ${data.user.email}`;
+        document.getElementById('userLine').textContent = `${data.user.name} · ${data.user.email}`;
         document.getElementById('points').textContent = data.user.loyaltyPoints || 0;
         document.getElementById('logRows').innerHTML = data.logs.length ? data.logs.map(log => `
-          <div class="row"><span><strong>${log.points > 0 ? '+' : ''}${log.points}</strong> Ð¾Ð½Ð¾Ð¾<br>${log.description || ''}</span><span>${new Date(log.createdAt).toLocaleDateString('mn-MN')}</span></div>
-        `).join('') : '<p class="muted">ÐžÐ´Ð¾Ð¾Ð³Ð¾Ð¾Ñ€ Ð¼ÑÐ´ÑÑÐ»ÑÐ» Ð°Ð»Ð³Ð°.</p>';
+          <div class="row"><span><strong>${log.points > 0 ? '+' : ''}${log.points}</strong> оноо<br>${log.description || ''}</span><span>${new Date(log.createdAt).toLocaleDateString('mn-MN')}</span></div>
+        `).join('') : '<p class="muted">Одоогоор мэдээлэл алга.</p>';
       })
       .catch(() => {});
   }
@@ -100,7 +100,7 @@
     fetch('/api/loyalty/redeem', {
       method:'POST',
       headers:headers(),
-      body:JSON.stringify({ points:100, description:'Loyalty 100 Ð¾Ð½Ð¾Ð¾ Ð°ÑˆÐ¸Ð³Ð»Ð°Ð²' })
+      body:JSON.stringify({ points:100, description:'Loyalty 100 оноо ашиглав' })
     }).then(loadLoyalty);
   });
 

@@ -93,12 +93,16 @@
     }
     .nav-links a {
       min-height: 42px;
+      min-width: 128px;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       border-radius: 999px;
       padding: 0 15px;
       color: var(--muted);
       font-weight: 500;
+      line-height: 1.25;
+      text-align: center;
       transition: .2s ease;
     }
     .nav-links a:hover {
@@ -320,18 +324,6 @@
       font-size: .78rem;
       font-weight: 700;
     }
-    .stock-badge {
-      position: absolute;
-      right: 12px;
-      bottom: 12px;
-      border-radius: 999px;
-      background: rgba(26, 15, 7, .76);
-      color: var(--foam);
-      padding: 7px 11px;
-      font-size: .78rem;
-      font-weight: 700;
-    }
-    .stock-badge.empty { background: rgba(164, 67, 53, .86); }
     .product-body { padding: 18px; }
     .product-body h3 {
       font-size: 1.55rem;
@@ -619,6 +611,36 @@
       border-color: var(--caramel);
       box-shadow: 0 0 0 3px rgba(192, 139, 69, .12);
     }
+    .time-slots {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .time-slot {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--espresso);
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .time-slot.active {
+      background: var(--espresso);
+      border-color: var(--espresso);
+      color: var(--foam);
+    }
+    .time-slot:disabled {
+      cursor: not-allowed;
+      opacity: .44;
+      text-decoration: line-through;
+      background: rgba(44, 26, 14, .06);
+    }
+    .slot-note {
+      color: var(--muted);
+      font-size: .82rem;
+      line-height: 1.45;
+    }
     .notice {
       border-radius: 14px;
       padding: 12px 14px;
@@ -737,6 +759,16 @@
       font-weight: 700;
       border-bottom: 1px solid rgba(44, 26, 14, .08);
     }
+    .mobile-menu button {
+      min-height: 44px;
+      border: 0;
+      border-bottom: 1px solid rgba(44, 26, 14, .08);
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-weight: 700;
+      text-align: left;
+    }
 
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(18px); }
@@ -788,7 +820,8 @@
         <a href="#contact">Холбоо барих</a>
       </nav>
       <div class="nav-actions">
-        <a class="btn ghost" href="/login.html">Нэвтрэх</a>
+        <a class="btn ghost" href="/login.html" data-auth-link>Нэвтрэх</a>
+        <button class="btn ghost" id="homeLogoutBtn" type="button" hidden>Гарах</button>
         <button class="btn primary" id="cartBtn" type="button">Сагс <span id="cartCount">0</span></button>
         <button class="btn ghost menu-toggle" id="menuToggle" type="button">Цэс</button>
       </div>
@@ -798,7 +831,8 @@
       <a href="#products">Event бүтээгдэхүүн</a>
       <a href="#about">Бидний тухай</a>
       <a href="#contact">Холбоо барих</a>
-      <a href="/login.html">Нэвтрэх</a>
+      <a href="/login.html" data-auth-link>Нэвтрэх</a>
+      <button type="button" id="mobileLogoutBtn" hidden>Гарах</button>
     </div>
   </header>
 
@@ -824,7 +858,7 @@
       <div class="container">
         <div class="section-head">
           <h2>Event-д хэрэгтэй зүйлээ ангиллаар сонго</h2>
-          <p>Бэлэн багц сонгоод, кофе сет эсвэл амттанаар нэмэлт хийж болно. Сонголт бүрийн үнэ, нөөц, агуулга шууд шинэчлэгдэнэ.</p>
+          <p>Бэлэн багц сонгоод, кофе сет эсвэл амттанаар нэмэлт хийж болно. Сонголт бүрийн үнэ, агуулга шууд шинэчлэгдэнэ.</p>
         </div>
         <div class="category-strip" id="categoryStrip">
           <button class="chip active" data-category="">Бүгд</button>
@@ -864,7 +898,7 @@
           <article class="info-card">
             <span>Баталгаажуулалт</span>
             <h3>Менежер холбогдоно</h3>
-            <p>Захиалгын дараа үнэ, нөөц, хүргэлт, event-ийн цагийг менежер утсаар баталгаажуулна.</p>
+            <p>Захиалгын дараа үнэ, хүргэлт, event-ийн цагийг менежер утсаар баталгаажуулна.</p>
           </article>
         </div>
       </div>
@@ -879,8 +913,8 @@
           </div>
           <div class="contact-list">
             <div><strong>Цагийн хуваарь:</strong> Даваа–Баасан 08:00–22:00, Бямба–Ням 09:00–23:00</div>
-            <div><strong>Байршил:</strong> Дархан хот, Grace Coffee Shop</div>
-            <div><strong>Холбоо барих:</strong> Facebook мессеж эсвэл утсаар захиалга баталгаажуулна</div>
+            <div><strong>Байршил:</strong> Дархан хот, Grace Coffee Shop, Link Hotel 1st floor</div>
+            <div><strong>Холбоо барих:</strong> 95722919 · <a href="https://www.facebook.com/gracedarkhan" target="_blank" rel="noreferrer">Facebook мессеж</a> эсвэл утсаар захиалга баталгаажуулна</div>
             <button class="btn accent" type="button" data-open-cart>Сагс нээх</button>
           </div>
         </div>
@@ -892,7 +926,7 @@
     <div class="container footer-inner">
       <span>© 2026 Grace Coffee Shop. Event захиалгын систем.</span>
       <div class="footer-links">
-        <a href="/login.html">Нэвтрэх</a>
+        <a href="/login.html" data-auth-link>Нэвтрэх</a>
         <a href="/check.html">Захиалга шалгах</a>
       </div>
     </div>
@@ -918,8 +952,17 @@
           <label class="field">Утас
             <input name="phone" required placeholder="99112233">
           </label>
-          <label class="field">Event-ийн хаяг / тэмдэглэл
-            <textarea name="address" required placeholder="Хаана, хэдэн цагт, ямар event болох талаар бичнэ үү"></textarea>
+          <label class="field">Event өдөр
+            <input name="eventDate" type="date" required>
+          </label>
+          <div class="field">
+            <span>Сул цаг</span>
+            <input name="eventTime" type="hidden" required>
+            <div class="time-slots" id="timeSlots"></div>
+            <div class="slot-note" id="slotNote">Өдрөө сонгоход сул цагууд гарна.</div>
+          </div>
+          <label class="field">Нэмэлт тэмдэглэл
+            <textarea name="address" placeholder="Event-ийн төрөл, нэмэлт хүсэлтээ бичнэ үү"></textarea>
           </label>
           <label class="field">Төлбөрийн хэлбэр
             <select name="paymentMethod">
@@ -955,7 +998,8 @@
       activeCategory: "",
       cart: JSON.parse(localStorage.getItem("grace_event_cart") || "[]"),
       detailProduct: null,
-      detailVariantId: null
+      detailVariantId: null,
+      selectedEventTime: ""
     };
 
     const money = new Intl.NumberFormat("mn-MN", { maximumFractionDigits: 0 });
@@ -972,9 +1016,56 @@
     const facebookBtn = document.getElementById("facebookBtn");
     const bankNotice = document.getElementById("bankNotice");
     const checkoutMessage = document.getElementById("checkoutMessage");
+    const timeSlots = document.getElementById("timeSlots");
+    const slotNote = document.getElementById("slotNote");
+    const authLinks = document.querySelectorAll("[data-auth-link]");
+    const logoutButtons = [document.getElementById("homeLogoutBtn"), document.getElementById("mobileLogoutBtn")].filter(Boolean);
+
+    function readStoredUser() {
+      try {
+        return JSON.parse(localStorage.getItem("cb_user") || "null");
+      } catch {
+        return null;
+      }
+    }
+
+    function updateAuthNavigation() {
+      const token = localStorage.getItem("cb_token");
+      const user = readStoredUser();
+      const isStaff = user && (user.role === "admin" || user.role === "manager");
+      const accountHref = isStaff ? "/dashboard.html" : "/account.html";
+      const accountLabel = isStaff ? "Самбар" : "Профайл";
+
+      authLinks.forEach((link) => {
+        link.href = token ? accountHref : "/login.html";
+        link.textContent = token ? accountLabel : "Нэвтрэх";
+      });
+      logoutButtons.forEach((button) => {
+        button.hidden = !token;
+      });
+
+      if (token && user) {
+        const nameInput = checkoutForm.elements.customerName;
+        const phoneInput = checkoutForm.elements.phone;
+        if (nameInput && !nameInput.value) nameInput.value = user.name || "";
+        if (phoneInput && !phoneInput.value) phoneInput.value = user.phone || "";
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("cb_token");
+      localStorage.removeItem("cb_user");
+      updateAuthNavigation();
+    }
 
     function formatPrice(value) {
       return `${money.format(Number(value || 0))}₮`;
+    }
+
+    function todayValue() {
+      const date = new Date();
+      date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+      return date.toISOString().slice(0, 10);
     }
 
     function firstVariant(product) {
@@ -991,6 +1082,44 @@
 
     function showMessage(message, type = "notice") {
       checkoutMessage.innerHTML = message ? `<div class="notice ${type === "error" ? "error" : ""}">${message}</div>` : "";
+    }
+
+    function selectEventTime(time) {
+      state.selectedEventTime = time;
+      checkoutForm.elements.eventTime.value = time;
+      timeSlots.querySelectorAll(".time-slot").forEach((button) => {
+        button.classList.toggle("active", button.dataset.time === time);
+      });
+    }
+
+    async function loadAvailability(dateValue) {
+      state.selectedEventTime = "";
+      checkoutForm.elements.eventTime.value = "";
+      timeSlots.innerHTML = "";
+      if (!dateValue) {
+        slotNote.textContent = "Өдрөө сонгоход сул цагууд гарна.";
+        return;
+      }
+
+      slotNote.textContent = "Сул цагууд ачааллаж байна...";
+      try {
+        const response = await fetch(`/api/shop/availability?date=${encodeURIComponent(dateValue)}`);
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Сул цаг ачаалсангүй");
+        const slots = data.slots || [];
+        timeSlots.innerHTML = slots.map((slot) => `
+          <button class="time-slot" type="button" data-time="${slot.time}" ${slot.available ? "" : "disabled"}>${slot.time}</button>
+        `).join("");
+        const availableCount = slots.filter((slot) => slot.available).length;
+        slotNote.textContent = availableCount
+          ? "Цагаан товчнууд сул, сонгосон цаг бараан өнгөтэй болно."
+          : "Энэ өдөр сул цаг алга байна. Өөр өдөр сонгоно уу.";
+        timeSlots.querySelectorAll(".time-slot:not(:disabled)").forEach((button) => {
+          button.addEventListener("click", () => selectEventTime(button.dataset.time));
+        });
+      } catch (err) {
+        slotNote.textContent = err.message;
+      }
     }
 
     function renderCategories() {
@@ -1031,7 +1160,6 @@
             <div class="product-media">
               <img src="${variant.image || "/assets/logo.png"}" alt="${product.name}">
               <span class="badge">${product.category}</span>
-              <span class="stock-badge ${stock <= 0 ? "empty" : ""}">${stock > 0 ? `Нөөц: ${stock}` : "Дууссан"}</span>
             </div>
             <div class="product-body">
               <h3>${product.name}</h3>
@@ -1172,13 +1300,12 @@
           </div>
           <div class="price-row" style="margin:0;">
             <span class="price">${formatPrice(variant.price)}</span>
-            <span class="stock-badge ${stock <= 0 ? "empty" : ""}" style="position:static;">${stock > 0 ? `Нөөц: ${stock}` : "Дууссан"}</span>
           </div>
           <div class="specs">
             <div class="spec"><span>Хэмжээ</span>${variant.size || "Тохиролцоно"}</div>
             <div class="spec"><span>Агуулга</span>${variant.material || "Кофе болон event нэмэлт"}</div>
             <div class="spec"><span>Event мэдээлэл</span>${product.deliveryInfo || "Менежер холбогдож баталгаажуулна."}</div>
-            <div class="spec"><span>Төлөв</span>${stock > 0 ? "Захиалах боломжтой" : "Түр дууссан"}</div>
+            <div class="spec"><span>Төлөв</span>${stock > 0 ? "Захиалах боломжтой" : "Түр авах боломжгүй"}</div>
           </div>
           <button class="btn primary full" type="button" data-detail-add ${stock <= 0 ? "disabled" : ""}>Сагсанд хийх</button>
           <div>
@@ -1226,8 +1353,22 @@
     }
 
     function openCart() {
+      const eventDateInput = checkoutForm.elements.eventDate;
+      if (eventDateInput && !eventDateInput.value) {
+        eventDateInput.value = todayValue();
+        loadAvailability(eventDateInput.value);
+      }
       renderCart();
       openDrawer(cartDrawer);
+    }
+
+    function initializeSchedulePicker() {
+      const eventDateInput = checkoutForm.elements.eventDate;
+      if (!eventDateInput) return;
+      eventDateInput.min = todayValue();
+      if (!eventDateInput.value) eventDateInput.value = todayValue();
+      eventDateInput.addEventListener("change", () => loadAvailability(eventDateInput.value));
+      loadAvailability(eventDateInput.value);
     }
 
     async function loadData() {
@@ -1267,20 +1408,33 @@
         showMessage("Сагс хоосон байна.", "error");
         return;
       }
+      const form = new FormData(checkoutForm);
+      const eventDate = form.get("eventDate");
+      const eventTime = form.get("eventTime");
+      if (!eventDate || !eventTime) {
+        showMessage("Event өдөр болон сул цаг сонгоно уу.", "error");
+        return;
+      }
+
       checkoutBtn.disabled = true;
       checkoutBtn.textContent = "Илгээж байна...";
-      const form = new FormData(checkoutForm);
       try {
+        const requestHeaders = { "Content-Type": "application/json" };
+        const authToken = localStorage.getItem("cb_token");
+        if (authToken) requestHeaders.Authorization = `Bearer ${authToken}`;
         const response = await fetch("/api/shop/orders", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: requestHeaders,
           body: JSON.stringify({
             customerName: form.get("customerName"),
             phone: form.get("phone"),
-            address: form.get("address"),
+            address: form.get("address") || "Дархан хот, Grace Coffee Shop, Link Hotel 1st floor",
+            eventDate,
+            eventTime,
             paymentMethod: form.get("paymentMethod"),
             items: state.cart.map((item) => ({
               product: item.product,
+              variant: item.variant,
               name: item.name,
               colorName: item.colorName,
               quantity: item.quantity,
@@ -1295,6 +1449,8 @@
         saveCart();
         renderCart();
         checkoutForm.reset();
+        checkoutForm.elements.eventDate.value = todayValue();
+        loadAvailability(checkoutForm.elements.eventDate.value);
         showMessage(`Захиалга амжилттай үүслээ. Дугаар: ${data.order.orderRef}`);
       } catch (err) {
         showMessage(err.message, "error");
@@ -1314,6 +1470,12 @@
     document.getElementById("mobileMenu").querySelectorAll("a").forEach((link) => {
       link.addEventListener("click", () => document.getElementById("mobileMenu").classList.remove("open"));
     });
+    logoutButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        logout();
+        document.getElementById("mobileMenu").classList.remove("open");
+      });
+    });
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
         closeDrawer(cartDrawer);
@@ -1321,6 +1483,8 @@
       }
     });
 
+    updateAuthNavigation();
+    initializeSchedulePicker();
     loadData().catch((err) => {
       productGrid.innerHTML = `<div class="notice error">${err.message}</div>`;
     });

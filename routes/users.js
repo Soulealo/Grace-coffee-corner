@@ -6,7 +6,7 @@ const requireRole = require('../middleware/role');
 
 const router = express.Router();
 
-router.use(auth, requireRole('director'));
+router.use(auth, requireRole('admin'));
 
 router.get('/', async (req, res, next) => {
   try {
@@ -22,10 +22,17 @@ router.get('/', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const name = String(req.body.name || '').trim();
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const password = String(req.body.password || '');
 
     if (!name || !email || !password) {
-      const err = new Error('Нэр, имэйл, нууц үг заавал оруулна');
+      const err = new Error('Name, email and password are required');
+      err.status = 400;
+      throw err;
+    }
+    if (password.length < 6) {
+      const err = new Error('Password must be at least 6 characters');
       err.status = 400;
       throw err;
     }
@@ -62,12 +69,12 @@ router.delete('/:id', async (req, res, next) => {
       .lean();
 
     if (!user) {
-      const err = new Error('Менежер олдсонгүй');
+      const err = new Error('Manager not found');
       err.status = 404;
       throw err;
     }
 
-    res.json({ message: 'Менежер идэвхгүй боллоо', user });
+    res.json({ message: 'Manager deactivated', user });
   } catch (err) {
     next(err);
   }

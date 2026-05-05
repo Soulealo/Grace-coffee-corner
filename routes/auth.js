@@ -14,75 +14,91 @@ function signToken(user) {
   );
 }
 
-router.post('/login', async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
+function publicUser(user) {
+  return {
+    id: user._id || user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    phone: user.phone || '',
+    loyaltyPoints: user.loyaltyPoints || 0
+  };
+}
 
-    if (!email || !password) {
-      const err = new Error('Имэйл болон нууц үгээ оруулна уу');
-      err.status = 400;
-      throw err;
-    }
-
-    const user = await User.findOne({ email: String(email).toLowerCase(), isActive: true });
-    if (!user) {
-      const err = new Error('Нэвтрэх мэдээлэл буруу байна');
-      err.status = 401;
-      throw err;
-    }
-
-    const ok = await bcrypt.compare(password, user.password);
-    if (!ok) {
-      const err = new Error('Нэвтрэх мэдээлэл буруу байна');
-      err.status = 401;
-      throw err;
-    }
-
-    res.json({
-      token: signToken(user),
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        phone: user.phone || '',
-        loyaltyPoints: user.loyaltyPoints || 0
-      }
-    });
-  } catch (err) {
-    next(err);
+function validatePassword(password) {
+  if (password.length < 6) {
+    const err = new Error('Password must be at least 6 characters');
+    err.status = 400;
+    throw err;
   }
-});
+}
 
 router.post('/register', async (req, res, next) => {
   try {
-    const { name, email, phone, password } = req.body;
+    const name = String(req.body.name || '').trim();
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const password = String(req.body.password || '');
+    const phone = String(req.body.phone || '').trim();
 
     if (!name || !email || !password) {
-      const err = new Error('Нэр, имэйл, нууц үг заавал оруулна уу');
+      const err = new Error('Name, email and password are required');
       err.status = 400;
+      throw err;
+    }
+    validatePassword(password);
+
+    const existing = await User.findOne({ email }).lean();
+    if (existing) {
+      const err = new Error('Email already registered');
+      err.status = 409;
       throw err;
     }
 
     const user = await User.create({
       name,
       email,
-      phone: phone || '',
+      phone,
       password: await bcrypt.hash(password, 12),
-      role: 'customer',
-      loyaltyPoints: 0
+      role: 'user'
     });
 
     res.status(201).json({
       token: signToken(user),
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        role: user.role,
-        loyaltyPoints: user.loyaltyPoints
-      }
+      user: publicUser(user)
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/login', async (req, res, next) => {
+  try {
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const password = String(req.body.password || '');
+
+    if (!email || !password) {
+      const err = new Error('Email and password are required');
+      err.status = 400;
+      throw err;
+    }
+
+    const user = await User.findOne({ email, isActive: { $ne: false } }).select('+password');
+    if (!user) {
+      const err = new Error('User not found');
+      err.status = 401;
+      throw err;
+    }
+
+    const passwordOk = await bcrypt.compare(password, user.password);
+    if (!passwordOk) {
+      const err = new Error('Password is incorrect');
+      err.status = 401;
+      throw err;
+    }
+
+    res.json({
+      token: signToken(user),
+      user: publicUser(user)
     });
   } catch (err) {
     next(err);
@@ -91,7 +107,7 @@ router.post('/register', async (req, res, next) => {
 
 router.post('/logout', async (req, res, next) => {
   try {
-    res.json({ message: 'Амжилттай гарлаа' });
+    res.json({ message: 'Logged out' });
   } catch (err) {
     next(err);
   }
@@ -99,7 +115,7 @@ router.post('/logout', async (req, res, next) => {
 
 router.get('/me', auth, async (req, res, next) => {
   try {
-    res.json({ user: req.user });
+    res.json({ user: publicUser(req.user) });
   } catch (err) {
     next(err);
   }
@@ -108,12 +124,18 @@ router.get('/me', auth, async (req, res, next) => {
 router.patch('/me', auth, async (req, res, next) => {
   try {
     const updates = {};
-    const { name, email, phone, password } = req.body;
+    const name = String(req.body.name || '').trim();
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const phone = req.body.phone;
+    const password = String(req.body.password || '');
 
     if (name) updates.name = name;
-    if (email) updates.email = String(email).toLowerCase();
-    if (phone !== undefined) updates.phone = phone;
-    if (password) updates.password = await bcrypt.hash(password, 12);
+    if (email) updates.email = email;
+    if (phone !== undefined) updates.phone = String(phone).trim();
+    if (password) {
+      validatePassword(password);
+      updates.password = await bcrypt.hash(password, 12);
+    }
 
     const user = await User.findByIdAndUpdate(req.user._id, updates, {
       new: true,
@@ -122,7 +144,7 @@ router.patch('/me', auth, async (req, res, next) => {
       .select('-password')
       .lean();
 
-    res.json({ user });
+    res.json({ user: publicUser(user) });
   } catch (err) {
     next(err);
   }

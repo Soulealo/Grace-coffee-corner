@@ -32,7 +32,7 @@ app.use(cors({
     if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    return callback(new Error('CORS origin зөвшөөрөгдөөгүй'));
+    return callback(new Error('CORS origin is not allowed'));
   },
   credentials: true
 }));
@@ -45,7 +45,7 @@ mongoose.set('bufferCommands', false);
 function requireDb(req, res, next) {
   if (mongoose.connection.readyState !== 1) {
     return res.status(503).json({
-      error: 'MongoDB холбогдоогүй байна. Серверийг дахин асаагаад хуудсыг refresh хийнэ үү.'
+      error: 'MongoDB is not connected. Restart the server and refresh the page.'
     });
   }
 
@@ -71,6 +71,10 @@ app.use('/api/packages', requireDb, packageRoutes);
 app.use('/api/loyalty', requireDb, loyaltyRoutes);
 app.use('/api/shop', requireDb, shopRoutes);
 
+// Short aliases requested by the backend contract.
+app.use('/', requireDb, authRoutes);
+app.use('/', requireDb, shopRoutes);
+
 app.use(express.static(__dirname, { index: false }));
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'landing.html'));
@@ -84,14 +88,14 @@ function connectMongo() {
       console.log('MongoDB connected');
     })
     .catch((err) => {
-      console.error('MongoDB холбогдсонгүй:', err.message);
-      console.error('MongoDB тохиргоогоо шалгаад серверийг restart хийх эсвэл npm start дахин ажиллуулна уу.');
+      console.error('MongoDB connection failed:', err.message);
+      console.error('Check MongoDB settings, then restart the server or run npm start again.');
     });
 }
 
 function start() {
   if (!process.env.JWT_SECRET || process.env.JWT_SECRET.includes('change_this')) {
-    console.warn('Анхаар: JWT_SECRET утгыг .env файлд хүчтэй нууц үгээр солино уу.');
+    console.warn('Warning: set a strong JWT_SECRET in .env.');
   }
 
   app.listen(port, () => {

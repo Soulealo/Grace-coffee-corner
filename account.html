@@ -1,107 +1,580 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="mn">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Grace Coffee Shop â€” ÐŸÑ€Ð¾Ñ„Ð°Ð¹Ð»</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Grace Coffee Shop | Профайл</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root { --cream:#F5EFE0; --espresso:#2C1A0E; --caramel:#C08B45; --latte:#D4B483; --foam:#FAF6EE; --dark-roast:#1A0F07; }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { min-height:100vh; background:var(--espresso); color:var(--cream); font-family:'DM Sans',sans-serif; font-weight:300; }
-  body::before { content:''; position:fixed; inset:0; background:radial-gradient(ellipse 80% 60% at 20% 10%, rgba(192,139,69,.13), transparent 60%), radial-gradient(ellipse 60% 80% at 80% 90%, rgba(192,139,69,.08), transparent 60%); pointer-events:none; }
-  header, main { position:relative; z-index:1; }
-  header { max-width:980px; margin:0 auto; padding:24px; display:flex; justify-content:space-between; gap:16px; align-items:center; }
-  a { color:var(--latte); text-decoration:none; }
-  .brand { color:var(--caramel); letter-spacing:2.5px; text-transform:uppercase; font-weight:500; }
-  nav { display:flex; gap:12px; flex-wrap:wrap; }
-  nav a, nav button { border:1px solid rgba(192,139,69,.3); border-radius:50px; padding:10px 16px; background:rgba(255,255,255,.03); color:var(--latte); font:inherit; cursor:pointer; }
-  main { max-width:980px; margin:0 auto; padding:42px 24px 70px; animation:fadeUp .55s ease both; }
-  h1 { font-family:'Playfair Display',serif; font-size:clamp(2.6rem,7vw,5rem); font-weight:400; margin-bottom:20px; }
-  h1 em { color:var(--caramel); }
-  .layout { display:grid; grid-template-columns:.9fr 1.1fr; gap:18px; }
-  .card { border:1px solid rgba(192,139,69,.26); border-radius:14px; background:rgba(255,255,255,.045); padding:24px; }
-  .points { font-family:'Playfair Display',serif; font-size:3rem; color:var(--caramel); margin:8px 0; }
-  p { color:var(--latte); line-height:1.7; }
-  form { display:grid; gap:14px; }
-  label { display:grid; gap:8px; color:var(--latte); font-size:11px; letter-spacing:1.5px; text-transform:uppercase; }
-  input { min-height:46px; border:1px solid rgba(192,139,69,.25); border-radius:8px; background:rgba(255,255,255,.05); color:var(--cream); font:inherit; padding:12px 14px; outline:none; }
-  button.primary { min-height:46px; border:0; border-radius:50px; background:var(--caramel); color:var(--dark-roast); font:inherit; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; cursor:pointer; }
-  .alert { display:none; margin-top:14px; color:#ffb2a8; line-height:1.6; }
+  :root {
+    --cream:#F5EFE0;
+    --espresso:#2C1A0E;
+    --caramel:#C08B45;
+    --latte:#D4B483;
+    --foam:#FAF6EE;
+    --dark-roast:#1A0F07;
+    --line:rgba(44,26,14,.14);
+    --muted:#74665C;
+    --success:#2F7D4E;
+    --danger:#A44335;
+    --shadow:0 18px 42px rgba(44,26,14,.12);
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    min-height:100vh;
+    color:var(--espresso);
+    font-family:"DM Sans", sans-serif;
+    background:var(--cream);
+  }
+  a { color:inherit; text-decoration:none; }
+  button, input { font:inherit; }
+  .shell { width:min(1180px, calc(100% - 36px)); margin:0 auto; }
+  header {
+    min-height:82px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:22px;
+    border-bottom:1px solid var(--line);
+  }
+  .brand {
+    display:flex;
+    align-items:center;
+    gap:13px;
+    min-width:210px;
+  }
+  .brand img {
+    width:66px;
+    height:54px;
+    object-fit:cover;
+    border-radius:8px;
+    box-shadow:0 8px 18px rgba(44,26,14,.18);
+  }
+  .brand span { display:grid; gap:2px; font-weight:800; line-height:1; }
+  .brand small { color:var(--muted); font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.16em; }
+  nav { display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+  nav a, nav button {
+    min-height:44px;
+    min-width:86px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:var(--foam);
+    color:var(--espresso);
+    padding:0 16px;
+    font-weight:700;
+    cursor:pointer;
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+  }
+  nav a:hover, nav button:hover { transform:translateY(-1px); box-shadow:0 10px 22px rgba(44,26,14,.12); }
+  .hero {
+    position:relative;
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) auto;
+    align-items:center;
+    gap:24px;
+    margin:28px 0 18px;
+    min-height:360px;
+    overflow:hidden;
+    border-radius:24px;
+    padding:clamp(26px, 5vw, 54px);
+    color:var(--foam);
+    background:
+      linear-gradient(90deg, rgba(26,15,7,.92), rgba(44,26,14,.74) 52%, rgba(44,26,14,.34)),
+      url("https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=1800&q=82") center/cover;
+  }
+  .eyebrow {
+    display:inline-flex;
+    align-items:center;
+    min-height:34px;
+    border:1px solid rgba(250,246,238,.24);
+    border-radius:999px;
+    padding:0 12px;
+    color:rgba(250,246,238,.82);
+    font-size:.78rem;
+    font-weight:800;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    margin-bottom:18px;
+  }
+  .eyebrow::before { display:none; }
+  h1 {
+    max-width:760px;
+    font-family:"Playfair Display", serif;
+    font-size:clamp(2.8rem, 7vw, 5.8rem);
+    font-weight:700;
+    line-height:.95;
+    letter-spacing:0;
+  }
+  h1 em { color:var(--latte); font-style:italic; font-weight:400; }
+  .hero-card {
+    width:230px;
+    border-radius:18px;
+    overflow:hidden;
+    background:rgba(26,15,7,.86);
+    color:var(--foam);
+    box-shadow:var(--shadow);
+    border:1px solid rgba(250,246,238,.16);
+  }
+  .hero-card img { width:100%; height:122px; object-fit:cover; display:block; }
+  .hero-card div { padding:14px; }
+  .hero-card strong { display:block; font-size:1.35rem; }
+  .hero-card span { color:#EBD4AF; font-size:.82rem; }
+  .layout {
+    display:grid;
+    grid-template-columns:minmax(300px, .86fr) minmax(0, 1.14fr);
+    gap:18px;
+    padding-bottom:70px;
+  }
+  .panel {
+    border:1px solid var(--line);
+    border-radius:18px;
+    background:var(--foam);
+    box-shadow:var(--shadow);
+  }
+  .profile-card { overflow:hidden; }
+  .cover {
+    min-height:128px;
+    background:
+      linear-gradient(135deg, rgba(36,25,18,.18), rgba(127,154,118,.24)),
+      url("https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=78") center/cover;
+  }
+  .profile-body { padding:0 24px 24px; }
+  .avatar {
+    width:84px;
+    height:84px;
+    display:grid;
+    place-items:center;
+    margin-top:-42px;
+    border:5px solid var(--cream);
+    border-radius:50%;
+    background:linear-gradient(135deg, var(--espresso), #6D4024);
+    color:var(--foam);
+    font-size:2rem;
+    font-weight:800;
+    box-shadow:0 14px 28px rgba(58,35,22,.22);
+  }
+  #hello { margin-top:14px; color:var(--muted); line-height:1.65; word-break:break-word; }
+  .points-row {
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:end;
+    gap:16px;
+    margin:22px 0 14px;
+  }
+  .points {
+    font-family:"Playfair Display", serif;
+    font-size:4.6rem;
+    line-height:.9;
+    color:var(--caramel);
+  }
+  .badge {
+    display:inline-flex;
+    align-items:center;
+    min-height:34px;
+    border-radius:999px;
+    background:rgba(192,139,69,.14);
+    color:var(--espresso);
+    padding:0 12px;
+    font-weight:800;
+    font-size:.82rem;
+  }
+  .progress {
+    height:10px;
+    overflow:hidden;
+    border-radius:999px;
+    background:rgba(58,35,22,.11);
+  }
+  .progress span {
+    display:block;
+    width:0%;
+    height:100%;
+    border-radius:inherit;
+    background:linear-gradient(90deg, var(--espresso), var(--caramel));
+    transition:width .45s ease;
+  }
+  .hint { color:var(--muted); line-height:1.6; margin-top:10px; }
+  .quick-actions {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:22px;
+  }
+  .quick-actions a {
+    min-height:48px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:#fff;
+    color:var(--espresso);
+    font-weight:800;
+  }
+  .quick-actions a:first-child { background:var(--espresso); color:var(--foam); border-color:var(--espresso); }
+  .form-card { padding:26px; }
+  .orders-card {
+    grid-column:1 / -1;
+    padding:26px;
+  }
+  .section-title {
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:20px;
+  }
+  .section-title h2 {
+    font-family:"Playfair Display", serif;
+    font-size:2rem;
+    font-weight:400;
+  }
+  .section-title p { color:var(--muted); line-height:1.6; max-width:360px; }
+  form { display:grid; grid-template-columns:1fr 1fr; gap:15px; }
+  label {
+    display:grid;
+    gap:8px;
+    color:var(--espresso);
+    font-size:.74rem;
+    font-weight:900;
+    letter-spacing:.11em;
+    text-transform:uppercase;
+  }
+  label.full { grid-column:1 / -1; }
+  input {
+    width:100%;
+    min-height:50px;
+    border:1px solid rgba(58,35,22,.18);
+    border-radius:8px;
+    background:rgba(255,255,255,.72);
+    color:var(--espresso);
+    padding:12px 14px;
+    outline:none;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.55);
+  }
+  input:focus {
+    border-color:rgba(127,154,118,.78);
+    box-shadow:0 0 0 4px rgba(127,154,118,.16);
+    background:#fff;
+  }
+  input::placeholder { color:#A49788; }
+  .primary {
+    grid-column:1 / -1;
+    min-height:52px;
+    border:0;
+    border-radius:999px;
+    background:var(--espresso);
+    color:var(--foam);
+    font-weight:900;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    cursor:pointer;
+    box-shadow:0 16px 34px rgba(58,35,22,.2);
+  }
+  .primary:hover { transform:translateY(-1px); }
+  .alert {
+    display:none;
+    margin-top:16px;
+    border-radius:8px;
+    padding:13px 14px;
+    background:rgba(223,163,154,.18);
+    color:#8A372F;
+    line-height:1.55;
+    font-weight:700;
+  }
   .alert.show { display:block; }
-  @keyframes fadeUp { from{opacity:0; transform:translateY(18px);} to{opacity:1; transform:translateY(0);} }
-  @media (max-width:600px){ header{align-items:flex-start; flex-direction:column;} .layout{grid-template-columns:1fr;} }
+  .alert.ok { background:rgba(127,154,118,.18); color:#506948; }
+  .order-list {
+    display:grid;
+    gap:12px;
+  }
+  .order-item {
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) auto;
+    gap:16px;
+    align-items:center;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:rgba(255,255,255,.64);
+    padding:16px;
+  }
+  .order-main {
+    display:grid;
+    gap:8px;
+    min-width:0;
+  }
+  .order-ref {
+    font-weight:900;
+    color:var(--espresso);
+    word-break:break-word;
+  }
+  .order-meta {
+    color:var(--muted);
+    line-height:1.5;
+  }
+  .order-total {
+    text-align:right;
+    display:grid;
+    gap:8px;
+  }
+  .status {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:30px;
+    border-radius:999px;
+    padding:0 11px;
+    background:rgba(192,139,69,.16);
+    color:var(--espresso);
+    font-size:.78rem;
+    font-weight:900;
+  }
+  .empty-state {
+    border:1px dashed rgba(58,35,22,.24);
+    border-radius:8px;
+    padding:18px;
+    color:var(--muted);
+    background:rgba(255,255,255,.46);
+    line-height:1.6;
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(18px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+  main { animation:fadeUp .55s ease both; }
+  @media (max-width:840px) {
+    .hero { grid-template-columns:1fr; padding-top:24px; }
+    .hero-card { width:100%; display:grid; grid-template-columns:150px 1fr; }
+    .hero-card img { height:100%; min-height:118px; }
+    .layout { grid-template-columns:1fr; }
+  }
+  @media (max-width:620px) {
+    .shell { width:min(100% - 24px, 1120px); }
+    header { align-items:flex-start; flex-direction:column; }
+    nav { width:100%; justify-content:flex-start; }
+    nav a, nav button { min-height:40px; min-width:78px; padding:0 13px; }
+    h1 { font-size:clamp(2.7rem, 17vw, 4rem); }
+    .hero-card { grid-template-columns:1fr; }
+    .hero-card img { height:112px; }
+    .form-card, .profile-body { padding-left:18px; padding-right:18px; }
+    form { grid-template-columns:1fr; }
+    .section-title { display:block; }
+    .section-title p { margin-top:8px; }
+    .quick-actions { grid-template-columns:1fr; }
+    .order-item { grid-template-columns:1fr; }
+    .order-total { text-align:left; }
+  }
 </style>
 </head>
 <body>
-  <header>
-    <a class="brand" href="/"><img src="/assets/logo.png" alt="Grace Coffee Shop logo" style="width:72px;height:52px;object-fit:cover;border-radius:8px;"></a>
-    <nav>
-      <a href="/landing.html">ÐÒ¯Ò¯Ñ€</a>
-      <a href="/">Event</a>
-      <a href="/loyalty.html">Loyalty</a>
-      <button id="logoutBtn">Ð“Ð°Ñ€Ð°Ñ…</button>
-    </nav>
-  </header>
-  <main>
-    <h1>ÐœÐ¸Ð½Ð¸Ð¹ <em>Ð¿Ñ€Ð¾Ñ„Ð°Ð¹Ð»</em></h1>
-    <div class="layout">
-      <section class="card">
-        <p id="hello">ÐÑ‡Ð°Ð°Ð»Ð»Ð°Ð¶ Ð±Ð°Ð¹Ð½Ð°...</p>
-        <div class="points" id="points">0</div>
-        <p>Loyalty Ð¾Ð½Ð¾Ð¾</p>
+  <div class="shell">
+    <header>
+      <a class="brand" href="/">
+        <img src="/assets/logo.png" alt="Grace Coffee Shop logo">
+        <span>Grace Coffee<small>Event & loyalty</small></span>
+      </a>
+      <nav>
+        <a href="/landing.html">Нүүр</a>
+        <a href="/">Event</a>
+        <a href="/loyalty.html">Loyalty</a>
+        <button id="logoutBtn">Гарах</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <span class="eyebrow">Customer profile</span>
+          <h1>Миний <em>профайл</em></h1>
+        </div>
+        <aside class="hero-card" aria-label="Grace Coffee loyalty">
+          <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=700&q=78" alt="Coffee cup">
+          <div>
+            <strong id="orderCountHero">0</strong>
+            <span>захиалга</span>
+          </div>
+        </aside>
       </section>
-      <section class="card">
-        <form id="profileForm">
-          <label>ÐÑÑ€
-            <input name="name" required>
-          </label>
-          <label>Ð˜-Ð¼ÑÐ¹Ð»
-            <input name="email" type="email" required>
-          </label>
-          <label>Ð£Ñ‚Ð°Ñ
-            <input name="phone">
-          </label>
-          <label>Ð¨Ð¸Ð½Ñ Ð½ÑƒÑƒÑ† Ò¯Ð³
-            <input name="password" type="password" placeholder="Ð¥Ð¾Ð¾ÑÐ¾Ð½ Ò¯Ð»Ð´ÑÑÐ¶ Ð±Ð¾Ð»Ð½Ð¾">
-          </label>
-          <button class="primary">Ð¥Ð°Ð´Ð³Ð°Ð»Ð°Ñ…</button>
-        </form>
-        <div id="alert" class="alert"></div>
+
+      <section class="layout">
+        <aside class="panel profile-card">
+          <div class="cover"></div>
+          <div class="profile-body">
+            <div class="avatar" id="avatar">G</div>
+            <p id="hello">Ачааллаж байна...</p>
+            <div class="points-row">
+              <div>
+                <div class="points" id="points">0</div>
+                <p class="hint">Loyalty оноо</p>
+              </div>
+              <span class="badge" id="tier">Bronze</span>
+            </div>
+            <div class="progress" aria-label="Loyalty progress"><span id="progressFill"></span></div>
+            <p class="hint" id="nextReward">Дараагийн урамшуулал хүртэл 100 оноо хэрэгтэй.</p>
+            <div class="quick-actions">
+              <a href="/loyalty.html">Оноо харах</a>
+              <a href="/">Event захиалах</a>
+            </div>
+          </div>
+        </aside>
+
+        <section class="panel form-card">
+          <div class="section-title">
+            <div>
+              <h2>Мэдээлэл засах</h2>
+              <p>Нэр, утас, имэйл болон шинэ нууц үгээ эндээс шинэчилнэ.</p>
+            </div>
+          </div>
+          <form id="profileForm">
+            <label>Нэр
+              <input name="name" required>
+            </label>
+            <label>Утас
+              <input name="phone" inputmode="tel" placeholder="99112233">
+            </label>
+            <label class="full">И-мэйл
+              <input name="email" type="email" required>
+            </label>
+            <label class="full">Шинэ нууц үг
+              <input name="password" type="password" placeholder="Хоосон үлдээж болно">
+            </label>
+            <button class="primary" type="submit">Хадгалах</button>
+          </form>
+          <div id="alert" class="alert"></div>
+        </section>
+
+        <section class="panel orders-card">
+          <div class="section-title">
+            <div>
+              <h2>Миний захиалгууд</h2>
+              <p>Event захиалгын дугаар, төлөв болон нийт дүн энд харагдана.</p>
+            </div>
+          </div>
+          <div id="ordersList" class="order-list">
+            <div class="empty-state">Захиалгууд ачааллаж байна...</div>
+          </div>
+        </section>
       </section>
-    </div>
-  </main>
+    </main>
+  </div>
+
 <script>
   const token = localStorage.getItem('cb_token');
   if (!token) window.location.href = '/login.html';
   const headers = { 'Content-Type':'application/json', Authorization:`Bearer ${token}` };
   const alertBox = document.getElementById('alert');
+  const ordersList = document.getElementById('ordersList');
 
   function api(url, options = {}) {
     return fetch(url, { ...options, headers:{ ...headers, ...(options.headers || {}) } })
       .then(async res => {
         const data = await res.json().catch(() => ({}));
         if (res.status === 401) {
-          localStorage.clear();
+          localStorage.removeItem('cb_token');
+          localStorage.removeItem('cb_user');
           window.location.href = '/login.html';
         }
-        if (!res.ok) throw new Error(data.error || 'ÐÐ»Ð´Ð°Ð° Ð³Ð°Ñ€Ð»Ð°Ð°');
+        if (!res.ok) throw new Error(data.error || 'Алдаа гарлаа');
         return data;
       });
   }
 
+  function initials(name = 'Grace') {
+    return name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join('').toUpperCase() || 'G';
+  }
+
+  function formatPrice(value) {
+    return new Intl.NumberFormat('mn-MN').format(Number(value || 0)) + '₮';
+  }
+
+  function formatDate(value) {
+    if (!value) return '';
+    return new Intl.DateTimeFormat('mn-MN', {
+      year:'numeric',
+      month:'short',
+      day:'numeric',
+      hour:'2-digit',
+      minute:'2-digit'
+    }).format(new Date(value));
+  }
+
+  function escapeHtml(value = '') {
+    return String(value)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+  }
+
+  const statusLabels = {
+    pending:'Хүлээгдэж байна',
+    confirmed:'Баталгаажсан',
+    delivering:'Бэлтгэж байна',
+    completed:'Дууссан',
+    cancelled:'Цуцлагдсан'
+  };
+
   function render(user) {
+    const points = user.loyaltyPoints || 0;
+    const next = Math.max(0, 100 - (points % 100 || (points ? 100 : 0)));
     localStorage.setItem('cb_user', JSON.stringify(user));
-    document.getElementById('hello').textContent = `${user.name} Â· ${user.email}`;
-    document.getElementById('points').textContent = user.loyaltyPoints || 0;
+    document.getElementById('hello').textContent = `${user.name} · ${user.email}`;
+    document.getElementById('avatar').textContent = initials(user.name);
+    document.getElementById('points').textContent = points;
+    document.getElementById('tier').textContent = points >= 500 ? 'Gold' : points >= 200 ? 'Silver' : 'Bronze';
+    document.getElementById('progressFill').style.width = `${points % 100 || (points ? 100 : 0)}%`;
+    document.getElementById('nextReward').textContent = next === 0 ? 'Урамшуулал ашиглах боломжтой.' : `Дараагийн урамшуулал хүртэл ${next} оноо хэрэгтэй.`;
     document.querySelector('[name="name"]').value = user.name || '';
     document.querySelector('[name="email"]').value = user.email || '';
     document.querySelector('[name="phone"]').value = user.phone || '';
   }
 
-  api('/api/loyalty/me').then(data => render(data.user)).catch(err => {
+  function renderOrders(orders = []) {
+    document.getElementById('orderCountHero').textContent = orders.length;
+    if (!orders.length) {
+      ordersList.innerHTML = '<div class="empty-state">Одоогоор захиалга алга. Event захиалах үед энд автоматаар нэмэгдэнэ.</div>';
+      return;
+    }
+
+    ordersList.innerHTML = orders.map((order) => {
+      const itemSummary = (order.items || [])
+        .map((item) => `${item.name || 'Бүтээгдэхүүн'} × ${item.quantity || 1}`)
+        .join(', ');
+      const eventSchedule = order.eventDate && order.eventTime
+        ? `${order.eventDate} · ${order.eventTime}`
+        : 'Event өдөр/цаг баталгаажина';
+      return `
+        <article class="order-item">
+          <div class="order-main">
+            <div class="order-ref">${escapeHtml(order.orderRef || 'Захиалга')}</div>
+            <div class="order-meta">${escapeHtml(eventSchedule)} · ${escapeHtml(itemSummary || 'Event захиалга')}</div>
+            <div class="order-meta">Үүссэн: ${escapeHtml(formatDate(order.createdAt))}</div>
+            <div class="order-meta">${escapeHtml(order.address || '')}</div>
+          </div>
+          <div class="order-total">
+            <strong>${formatPrice(order.total)}</strong>
+            <span class="status">${escapeHtml(statusLabels[order.status] || order.status || 'Хүлээгдэж байна')}</span>
+          </div>
+        </article>
+      `;
+    }).join('');
+  }
+
+  Promise.all([
+    api('/api/loyalty/me'),
+    api('/api/shop/my-orders')
+  ]).then(([loyaltyData, orderData]) => {
+    render(loyaltyData.user);
+    renderOrders(orderData.orders);
+  }).catch(err => {
     alertBox.textContent = err.message;
     alertBox.className = 'alert show';
+    ordersList.innerHTML = '<div class="empty-state">Захиалга ачаалж чадсангүй.</div>';
   });
 
   document.getElementById('profileForm').addEventListener('submit', event => {
@@ -111,8 +584,8 @@
     api('/api/auth/me', { method:'PATCH', body:JSON.stringify(values) })
       .then(data => {
         render(data.user);
-        alertBox.textContent = 'ÐŸÑ€Ð¾Ñ„Ð°Ð¹Ð» Ñ…Ð°Ð´Ð³Ð°Ð»Ð°Ð³Ð´Ð»Ð°Ð°';
-        alertBox.className = 'alert show';
+        alertBox.textContent = 'Профайл хадгалагдлаа';
+        alertBox.className = 'alert show ok';
       })
       .catch(err => {
         alertBox.textContent = err.message;
@@ -121,10 +594,10 @@
   });
 
   document.getElementById('logoutBtn').addEventListener('click', () => {
-    localStorage.clear();
+    localStorage.removeItem('cb_token');
+    localStorage.removeItem('cb_user');
     window.location.href = '/landing.html';
   });
 </script>
 </body>
 </html>
-

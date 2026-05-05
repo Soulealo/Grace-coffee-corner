@@ -1,5 +1,4 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const User = require('../models/User');
 const LoyaltyLog = require('../models/LoyaltyLog');
 const auth = require('../middleware/auth');
@@ -23,7 +22,6 @@ router.get('/me', async (req, res, next) => {
 });
 
 router.post('/redeem', async (req, res, next) => {
-  const session = await mongoose.startSession();
   try {
     const points = Number(req.body.points);
     const description = req.body.description || 'Loyalty урамшуулал ашиглав';
@@ -34,37 +32,32 @@ router.post('/redeem', async (req, res, next) => {
       throw err;
     }
 
-    let updatedUser;
-    await session.withTransaction(async () => {
-      updatedUser = await User.findOneAndUpdate(
-        { _id: req.user._id, loyaltyPoints: { $gte: points } },
-        { $inc: { loyaltyPoints: -points } },
-        { new: true, session }
-      ).select('name email phone role loyaltyPoints');
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: req.user._id, loyaltyPoints: { $gte: points } },
+      { $inc: { loyaltyPoints: -points } },
+      { new: true }
+    ).select('name email phone role loyaltyPoints');
 
-      if (!updatedUser) {
-        const err = new Error('Оноо хүрэлцэхгүй байна');
-        err.status = 400;
-        throw err;
-      }
+    if (!updatedUser) {
+      const err = new Error('Оноо хүрэлцэхгүй байна');
+      err.status = 400;
+      throw err;
+    }
 
-      await LoyaltyLog.create([{
-        user: req.user._id,
-        type: 'redeem',
-        points: -points,
-        description
-      }], { session });
+    await LoyaltyLog.create({
+      user: req.user._id,
+      type: 'redeem',
+      points: -points,
+      description
     });
 
     res.json({ user: updatedUser });
   } catch (err) {
     next(err);
-  } finally {
-    session.endSession();
   }
 });
 
-router.post('/earn', requireRole('director', 'manager'), async (req, res, next) => {
+router.post('/earn', requireRole('admin', 'manager'), async (req, res, next) => {
   try {
     const { email, description } = req.body;
     const points = Number(req.body.points);

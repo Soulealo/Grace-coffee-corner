@@ -4,14 +4,8 @@ const categorySchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, 'Ангиллын нэр оруулна уу'],
-      trim: true
-    },
-    slug: {
-      type: String,
-      required: true,
+      required: [true, 'Category name is required'],
       unique: true,
-      lowercase: true,
       trim: true
     },
     isActive: {

@@ -74,7 +74,7 @@ router.get('/:ref/status', async (req, res, next) => {
   }
 });
 
-router.use(auth, requireRole('manager', 'director'));
+router.use(auth, requireRole('manager', 'admin'));
 
 router.get('/', async (req, res, next) => {
   try {
@@ -171,7 +171,7 @@ router.patch('/:id/note', async (req, res, next) => {
   }
 });
 
-router.patch('/:id', requireRole('director'), async (req, res, next) => {
+router.patch('/:id', requireRole('admin'), async (req, res, next) => {
   try {
     ensureObjectId(req.params.id);
     const allowed = ['clientName', 'phone', 'email', 'package', 'eventType', 'eventDate', 'eventTime', 'guestCount', 'notes', 'status', 'managerNote'];
@@ -198,7 +198,7 @@ router.patch('/:id', requireRole('director'), async (req, res, next) => {
   }
 });
 
-router.delete('/:id', requireRole('director'), async (req, res, next) => {
+router.delete('/:id', requireRole('admin'), async (req, res, next) => {
   try {
     ensureObjectId(req.params.id);
     const booking = await Booking.findByIdAndDelete(req.params.id).lean();

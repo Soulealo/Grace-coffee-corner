@@ -4,31 +4,32 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, 'Нэр заавал оруулна'],
+      required: [true, 'Name is required'],
       trim: true
     },
     email: {
       type: String,
       unique: true,
-      required: [true, 'Имэйл заавал оруулна'],
+      required: [true, 'Email is required'],
       lowercase: true,
       trim: true,
-      match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Имэйл хаяг буруу байна']
+      match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Email is invalid']
+    },
+    password: {
+      type: String,
+      required: [true, 'Password is required'],
+      minlength: [6, 'Password must be at least 6 characters'],
+      select: false
+    },
+    role: {
+      type: String,
+      enum: ['admin', 'manager', 'user'],
+      default: 'user'
     },
     phone: {
       type: String,
       trim: true,
       default: ''
-    },
-    password: {
-      type: String,
-      required: [true, 'Нууц үг заавал оруулна'],
-      minlength: [6, 'Нууц үг 6 тэмдэгтээс урт байх ёстой']
-    },
-    role: {
-      type: String,
-      enum: ['director', 'manager', 'customer'],
-      default: 'customer'
     },
     loyaltyPoints: {
       type: Number,
